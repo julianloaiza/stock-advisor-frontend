@@ -1,6 +1,6 @@
 <!-- src/components/common/BaseTable.vue -->
 <script setup lang="ts">
-import BaseRow from './BaseRow.vue'
+import BaseRow from '../molecules/BaseRow.vue'
 </script>
 
 <template>

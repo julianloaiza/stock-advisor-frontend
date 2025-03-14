@@ -1,13 +1,14 @@
-<script setup lang="ts"></script>
+<!-- src/App.vue -->
+<script setup lang="ts">
+// Sin lógica extra por ahora
+</script>
 
 <template>
-  <div class="min-h-screen bg-gray-900 text-gray-100">
-    <header class="bg-gray-800 p-4 shadow-md">
-      <div class="container mx-auto">
-        <h1 class="text-2xl md:text-3xl font-bold text-center">Stock Advisor</h1>
-      </div>
+  <div id="app" class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <header class="bg-gray-100 dark:bg-gray-800 p-4 text-center">
+      <h1 class="text-2xl font-bold">Stock Advisor</h1>
     </header>
-    <main class="container mx-auto p-4">
+    <main class="p-4">
       <router-view />
     </main>
   </div>
