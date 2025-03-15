@@ -1,15 +1,25 @@
-<!-- src/App.vue -->
 <script setup lang="ts">
-// Sin lógica extra por ahora
+import { onMounted } from 'vue'
+import { initFlowbite } from 'flowbite'
+import AppNavBar from './components/layout/AppNavBar.vue'
+import AppContent from './components/layout/AppContent.vue'
+import AppFooter from './components/layout/AppFooter.vue'
+
+// initialize components based on data attribute selectors
+onMounted(() => {
+  initFlowbite()
+})
 </script>
 
 <template>
-  <div id="app" class="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <header class="bg-gray-100 dark:bg-gray-800 p-4 text-center">
-      <h1 class="text-2xl font-bold">{{ $t('stockAdvisor') }}</h1>
-    </header>
-    <main class="p-4">
+  <div
+    id="app"
+    class="flex flex-col min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+  >
+    <AppNavBar />
+    <AppContent class="flex-grow">
       <router-view />
-    </main>
+    </AppContent>
+    <AppFooter />
   </div>
 </template>
