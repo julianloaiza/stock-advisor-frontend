@@ -1,13 +1,10 @@
 <!-- src/components/common/BaseTable.vue -->
-<script setup lang="ts">
-import BaseRow from '../molecules/BaseRow.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="base-table">
     <p>Base Table Component</p>
     <!-- Ejemplo: renderizamos una fila -->
-    <BaseRow />
   </div>
 </template>
 

@@ -44,3 +44,6 @@ cypress/screenshots/
 # Archivos específicos del sistema
 .DS_Store
 Thumbs.db
+
+# Bases de datos
+/cockroach-data/

@@ -7,6 +7,8 @@ export interface GetStocksParams {
   query?: string
   page?: number
   size?: number
+  minTargetTo?: string
+  maxTargetTo?: string
 }
 
 export const getStocks = async (params: GetStocksParams): Promise<ApiResponse<Stock>> => {
