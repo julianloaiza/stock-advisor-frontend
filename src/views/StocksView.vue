@@ -43,72 +43,28 @@ export default defineComponent({
 
     // Computar los valores iniciales para el formulario a partir del store
     const formInitialValues = computed(() => {
-      const { query, recommends, minTargetTo, maxTargetTo } = stockStore.filters
-
-      console.log('Initial values from store:', { query, recommends, minTargetTo, maxTargetTo })
+      const { query, recommends, minTargetTo, maxTargetTo, currency } = stockStore.filters
 
       return {
         query: query || '',
-        recommends: recommends || false,
+        recommends: Boolean(recommends),
         minTargetTo: minTargetTo !== undefined ? minTargetTo : '',
         maxTargetTo: maxTargetTo !== undefined ? maxTargetTo : '',
+        currency: currency || 'USD',
       }
     })
 
     // Manejar envío de formulario de filtros
     const handleFilterSubmit = (formData: Record<string, unknown>) => {
-      console.log('Form data received:', formData)
-
-      // Preparar objeto de filtros para la API
-      const filters: Partial<GetStocksParams> = {
-        query: typeof formData.query === 'string' ? formData.query : undefined,
-        recommends: formData.recommends === true,
-      }
-
-      // Manejo específico para los campos numéricos
-      if ('minTargetTo' in formData) {
-        if (formData.minTargetTo === '' || formData.minTargetTo === null) {
-          filters.minTargetTo = undefined
-        } else {
-          // Convertir a número si es posible
-          const numValue =
-            typeof formData.minTargetTo === 'number'
-              ? formData.minTargetTo
-              : parseFloat(String(formData.minTargetTo))
-
-          filters.minTargetTo = isNaN(numValue) ? undefined : numValue
-        }
-      }
-
-      if ('maxTargetTo' in formData) {
-        if (formData.maxTargetTo === '' || formData.maxTargetTo === null) {
-          filters.maxTargetTo = undefined
-        } else {
-          // Convertir a número si es posible
-          const numValue =
-            typeof formData.maxTargetTo === 'number'
-              ? formData.maxTargetTo
-              : parseFloat(String(formData.maxTargetTo))
-
-          filters.maxTargetTo = isNaN(numValue) ? undefined : numValue
-        }
-      }
-
-      console.log('Filters to apply:', filters)
-
-      // Actualizar filtros (también desencadena la búsqueda)
-      stockStore.updateFilters(filters)
+      // Solo pasamos los datos al store, que ya maneja la transformación correctamente
+      stockStore.updateFilters(formData as Partial<GetStocksParams>)
     }
 
-    // Carga inicial de datos
+    // Carga inicial de datos solo si no hay datos ya cargados
     onMounted(() => {
-      // Verificamos los filtros guardados en localStorage
-      const stored = localStorage.getItem('stockFilters')
-      if (stored) {
-        console.log('Stored filters found:', JSON.parse(stored))
+      if (!stockStore.hasResults && !stockStore.loading) {
+        stockStore.fetchStocks()
       }
-
-      stockStore.fetchStocks()
     })
 
     return {

@@ -4,22 +4,37 @@ import { getStocks } from '@/api/services/stockService'
 import type { GetStocksParams } from '@/api/services/stockService'
 import type { Stock } from '@/interfaces/Stock.interface'
 
+const STORAGE_KEY = 'stockFilters'
+
 // Función para guardar filtros en localStorage
-const saveFiltersToStorage = (filters: Partial<GetStocksParams>) => {
-  localStorage.setItem('stockFilters', JSON.stringify(filters))
+const saveFiltersToStorage = (filters: Partial<GetStocksParams>): void => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filters))
+  } catch (e) {
+    console.error('Error saving filters to storage:', e)
+  }
 }
 
 // Función para recuperar filtros de localStorage
 const getFiltersFromStorage = (): Partial<GetStocksParams> => {
-  const stored = localStorage.getItem('stockFilters')
-  if (stored) {
-    try {
-      return JSON.parse(stored)
-    } catch (e) {
-      console.error('Error parsing stored filters', e)
-    }
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    return stored ? JSON.parse(stored) : {}
+  } catch (e) {
+    console.error('Error parsing stored filters:', e)
+    return {}
   }
-  return {}
+}
+
+// Valores por defecto para los filtros
+const DEFAULT_FILTERS: GetStocksParams = {
+  query: '',
+  recommends: false,
+  minTargetTo: undefined,
+  maxTargetTo: undefined,
+  currency: 'USD',
+  page: 1,
+  size: 10,
 }
 
 interface StockState {
@@ -51,39 +66,63 @@ export const useStockStore = defineStore('stock', {
 
       // Filtros (con valores iniciales + persistencia)
       filters: {
-        query: '',
-        recommends: false,
-        minTargetTo: undefined,
-        maxTargetTo: undefined,
-        page: 1,
-        size: 10,
+        ...DEFAULT_FILTERS,
         ...savedFilters,
       } as GetStocksParams,
     }
   },
 
   actions: {
+    // Normalizar valores de filtros para asegurar tipos correctos
+    normalizeFilterValue(key: string, value: unknown): unknown {
+      // Para campos numéricos
+      if (['minTargetTo', 'maxTargetTo'].includes(key)) {
+        if (value === '' || value === null || value === undefined) {
+          return undefined
+        }
+
+        const numValue = typeof value === 'number' ? value : parseFloat(String(value))
+        return isNaN(numValue) ? undefined : numValue
+      }
+
+      // Para campos booleanos
+      if (key === 'recommends') {
+        return Boolean(value)
+      }
+
+      // El campo currency siempre debe tener un valor
+      if (key === 'currency') {
+        return value || 'USD'
+      }
+
+      // Para otros campos
+      return value
+    },
+
     // Actualizar filtros
     updateFilters(newFilters: Partial<GetStocksParams>) {
       // Si cambiamos filtros (no paginación), reseteamos a página 1
-      if (Object.keys(newFilters).some((key) => key !== 'page' && key !== 'size')) {
+      const isNonPaginationChange = Object.keys(newFilters).some(
+        (key) => key !== 'page' && key !== 'size',
+      )
+
+      if (isNonPaginationChange) {
         this.filters.page = 1
       }
 
-      // Asegurarse que los valores numéricos sean del tipo correcto
-      // Los valores vacíos o no numéricos se convierten a undefined
-      if ('minTargetTo' in newFilters && newFilters.minTargetTo === null) {
-        newFilters.minTargetTo = undefined
-      }
-
-      if ('maxTargetTo' in newFilters && newFilters.maxTargetTo === null) {
-        newFilters.maxTargetTo = undefined
-      }
+      // Normalizar los valores del filtro
+      const normalizedFilters = Object.entries(newFilters).reduce(
+        (acc, [key, value]) => {
+          acc[key] = this.normalizeFilterValue(key, value)
+          return acc
+        },
+        {} as Record<string, unknown>,
+      )
 
       // Actualizamos los filtros
       this.filters = {
         ...this.filters,
-        ...newFilters,
+        ...normalizedFilters,
       }
 
       // Guardamos en localStorage para persistencia
@@ -95,16 +134,8 @@ export const useStockStore = defineStore('stock', {
 
     // Resetear filtros
     resetFilters() {
-      this.filters = {
-        query: '',
-        recommends: false,
-        minTargetTo: undefined,
-        maxTargetTo: undefined,
-        page: 1,
-        size: 10,
-      }
-
-      localStorage.removeItem('stockFilters')
+      this.filters = { ...DEFAULT_FILTERS }
+      localStorage.removeItem(STORAGE_KEY)
       this.fetchStocks()
     },
 
@@ -156,7 +187,9 @@ export const useStockStore = defineStore('stock', {
         (state.filters.query !== undefined && state.filters.query !== '') ||
         state.filters.recommends === true ||
         state.filters.minTargetTo !== undefined ||
-        state.filters.maxTargetTo !== undefined
+        state.filters.maxTargetTo !== undefined ||
+        // Currency ya no es un filtro opcional, siempre tiene valor
+        (state.filters.currency !== undefined && state.filters.currency !== 'USD')
       )
     },
   },

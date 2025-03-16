@@ -4,7 +4,7 @@
       <h2 class="text-lg font-semibold dark:text-white">{{ title }}</h2>
 
       <BaseButton
-        v-if="showCollapseToggle"
+        v-if="collapsible"
         :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
         variant="text"
         @click="toggleCollapse"
@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref } from 'vue'
 import type { PropType } from 'vue'
 import CustomForm from '@/components/molecules/CustomForm.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
@@ -56,23 +56,11 @@ export default defineComponent({
   setup(props, { emit }) {
     // Estado de colapso para mejorar UX en móviles
     const isCollapsed = ref(props.defaultCollapsed)
-    const showCollapseToggle = ref(props.collapsible)
 
     // Toggle para colapsar/expandir el formulario
     const toggleCollapse = () => {
       isCollapsed.value = !isCollapsed.value
     }
-
-    // Cuando cambien los valores iniciales, asegurarse de que el filtro esté visible
-    watch(
-      () => props.initialValues,
-      () => {
-        if (isCollapsed.value) {
-          isCollapsed.value = false
-        }
-      },
-      { deep: true },
-    )
 
     // Pasar los datos del formulario al componente padre
     const onFormSubmit = (formData: Record<string, unknown>) => {
@@ -81,7 +69,6 @@ export default defineComponent({
 
     return {
       isCollapsed,
-      showCollapseToggle,
       toggleCollapse,
       onFormSubmit,
     }

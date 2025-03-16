@@ -9,6 +9,7 @@ export interface GetStocksParams {
   size?: number
   minTargetTo?: number
   maxTargetTo?: number
+  currency?: string
 }
 
 export const getStocks = async (params: GetStocksParams): Promise<ApiResponse<Stock>> => {
@@ -17,6 +18,16 @@ export const getStocks = async (params: GetStocksParams): Promise<ApiResponse<St
     return response.data
   } catch (error) {
     console.error('Error al obtener stocks:', error)
+    throw error
+  }
+}
+
+export const syncStocks = async (limit?: number): Promise<ApiResponse<null>> => {
+  try {
+    const response = await api.post<ApiResponse<null>>('/stocks/sync', { limit })
+    return response.data
+  } catch (error) {
+    console.error('Error al sincronizar stocks:', error)
     throw error
   }
 }

@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, watch, onMounted } from 'vue'
+import { defineComponent, reactive, watch } from 'vue'
 import type { PropType } from 'vue'
 import BaseInput from '../atoms/BaseInput.vue'
 import BaseSwitch from '../atoms/BaseSwitch.vue'
@@ -73,35 +73,38 @@ export default defineComponent({
   setup(props, { emit }) {
     type FormValue = string | boolean | number | undefined
 
-    const initFormData = () => {
+    // Mapa de inicializadores por tipo de campo
+    const initializers: Record<FieldInputType, (field: Field) => FormValue> = {
+      'input-search': () => '',
+      'input-number': () => '',
+      'input-currency': () => '',
+      switch: () => false,
+      dropdown: (field) =>
+        field.options && field.options.length > 0 ? field.options[0].value : '',
+    }
+
+    // Inicializar datos del formulario
+    const initFormData = (): Record<string, FormValue> => {
       const data: Record<string, FormValue> = {}
 
-      // Mapa de inicializadores por tipo de campo
-      const initializers: Record<FieldInputType, (field: Field) => FormValue> = {
-        'input-search': () => '',
-        'input-number': () => '',
-        'input-currency': () => '',
-        switch: () => false,
-        dropdown: (field) =>
-          field.options && field.options.length > 0 ? field.options[0].value : '',
-      }
-
       props.config.fields.forEach((field: Field) => {
-        // Primero intentamos usar el valor inicial si existe
-        if (props.initialValues && props.initialValues[field.name] !== undefined) {
-          // Manejo especial para campos numéricos (trata el valor 0 como válido)
-          if (['minTargetTo', 'maxTargetTo'].includes(field.name)) {
-            const value = props.initialValues[field.name]
-            if (value === 0 || value) {
-              data[field.name] = value as FormValue
-            } else {
-              data[field.name] = ''
-            }
+        // Intentar usar el valor inicial si existe
+        const hasInitialValue = props.initialValues && props.initialValues[field.name] !== undefined
+
+        if (hasInitialValue) {
+          const value = props.initialValues[field.name]
+
+          // Manejo especial para campos numéricos
+          if (['input-number', 'input-currency'].includes(field.type)) {
+            data[field.name] = value === 0 || value ? (value as FormValue) : ''
+          } else if (field.type === 'dropdown') {
+            // Asegurar que los campos dropdown siempre tengan una cadena de texto
+            data[field.name] = value === null || value === undefined ? '' : String(value)
           } else {
-            data[field.name] = props.initialValues[field.name] as FormValue
+            data[field.name] = value as FormValue
           }
         } else {
-          // Si no hay valor inicial, usamos el inicializador
+          // Si no hay valor inicial, usar el inicializador por tipo
           data[field.name] = initializers[field.type](field)
         }
       })
@@ -111,67 +114,65 @@ export default defineComponent({
 
     const formData = reactive<Record<string, FormValue>>(initFormData())
 
-    // Actualizar el formulario cuando cambian los valores iniciales
+    // Actualizar cuando cambian los valores iniciales
     watch(
       () => props.initialValues,
       (newValues) => {
-        if (newValues) {
-          Object.keys(newValues).forEach((key) => {
-            // Solo actualizar si el campo existe en el formulario
-            if (key in formData) {
-              // Manejo especial para campos numéricos (trata el valor 0 como válido)
-              if (['minTargetTo', 'maxTargetTo'].includes(key)) {
-                const value = newValues[key]
-                // Preservar valor numérico (incluso 0) o usar cadena vacía
-                formData[key] = value === 0 || value ? (value as FormValue) : ''
-              } else {
-                formData[key] = newValues[key] as FormValue
-              }
+        if (!newValues) return
+
+        props.config.fields.forEach((field: Field) => {
+          if (field.name in newValues) {
+            const value = newValues[field.name]
+
+            // Manejo especial para campos numéricos
+            if (['input-number', 'input-currency'].includes(field.type)) {
+              formData[field.name] = value === 0 || value ? (value as FormValue) : ''
+            } else if (field.type === 'dropdown') {
+              // Asegurar que los campos dropdown siempre tengan una cadena de texto
+              formData[field.name] = value === null || value === undefined ? '' : String(value)
+            } else {
+              formData[field.name] = value as FormValue
             }
-          })
-        }
+          }
+        })
       },
       { deep: true, immediate: true },
     )
 
-    // Asegurarse de que los valores iniciales se apliquen al montar el componente
-    onMounted(() => {
-      if (props.initialValues) {
-        Object.keys(props.initialValues).forEach((key) => {
-          // Solo actualizar si el campo existe en el formulario
-          if (key in formData) {
-            // Manejo especial para campos numéricos (trata el valor 0 como válido)
-            if (['minTargetTo', 'maxTargetTo'].includes(key)) {
-              const value = props.initialValues[key]
-              // Preservar valor numérico (incluso 0) o usar cadena vacía
-              formData[key] = value === 0 || value ? (value as FormValue) : ''
-            } else {
-              formData[key] = props.initialValues[key] as FormValue
-            }
+    // Procesar un campo según su tipo para dar el formato adecuado
+    const processFieldValue = (name: string, value: FormValue): unknown => {
+      // Buscar tipo de campo
+      const field = props.config.fields.find((f) => f.name === name)
+      if (!field) return value
+
+      switch (field.type) {
+        case 'input-number':
+        case 'input-currency':
+          if (value === '' || value === null || value === undefined) return undefined
+          const numValue = typeof value === 'number' ? value : parseFloat(String(value))
+          return isNaN(numValue) ? undefined : numValue
+
+        case 'switch':
+          return Boolean(value)
+
+        case 'dropdown':
+          // Tratar cadena vacía como un valor válido para dropdowns
+          if (name === 'currency') {
+            return value === undefined || value === '' ? 'USD' : String(value)
           }
-        })
+          return value === undefined ? '' : String(value)
+
+        default:
+          return value
       }
-    })
+    }
 
     const handleSubmit = () => {
-      // Preparar datos para el envío
+      // Preparar datos procesados según tipo de cada campo
       const processedData: Record<string, unknown> = {}
 
-      // Procesar cada campo para asegurar tipos correctos
       Object.entries(formData).forEach(([key, value]) => {
-        if (['minTargetTo', 'maxTargetTo'].includes(key)) {
-          if (value === '' || value === null || value === undefined) {
-            // Enviar undefined para campos vacíos
-            processedData[key] = undefined
-          } else {
-            // Intentar convertir a número para los campos numéricos
-            const numValue = typeof value === 'number' ? value : parseFloat(String(value))
-            processedData[key] = isNaN(numValue) ? undefined : numValue
-          }
-        } else {
-          // Para otros campos, usar el valor tal cual
-          processedData[key] = value
-        }
+        processedData[key] = processFieldValue(key, value)
       })
 
       emit('search', processedData)

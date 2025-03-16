@@ -1,6 +1,7 @@
 import type { FormConfig } from '@/interfaces/BaseForm.interface'
 import type { TableConfig } from '@/interfaces/BaseTable.interface'
 
+// Configuración del formulario de filtros de stocks
 export const stocksFormConfig: FormConfig = {
   fields: [
     {
@@ -21,6 +22,7 @@ export const stocksFormConfig: FormConfig = {
     {
       name: 'currency',
       type: 'dropdown',
+      placeholder: 'Currency',
       options: [
         { value: 'USD', label: 'USD' },
         { value: 'EUR', label: 'EUR' },
@@ -29,13 +31,15 @@ export const stocksFormConfig: FormConfig = {
     {
       name: 'recommends',
       type: 'switch',
+      placeholder: 'Recommended',
     },
   ],
   actionLabel: 'Search',
 }
 
+// Configuración de la tabla de stocks
 export const stocksTableConfig: TableConfig = {
-  title: 'Stocks Table',
+  title: 'Stocks',
   columns: [
     {
       key: 'ticker',
