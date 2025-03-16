@@ -1,20 +1,30 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-3">
-      <h2 class="text-lg font-semibold dark:text-white">{{ title }}</h2>
+    <!-- En móvil: título a la izquierda, botón a la derecha -->
+    <!-- En desktop: título centrado, sin botón -->
+    <div class="flex md:justify-center items-center mb-3 relative">
+      <div class="flex justify-between items-center w-full md:w-auto">
+        <h2 class="text-lg font-semibold dark:text-white">{{ title }}</h2>
 
-      <!-- Botón de toggle siempre visible en móvil, oculto en escritorio -->
-      <BaseButton
-        v-if="isMobile"
-        :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
-        :label="isCollapsed ? 'Mostrar' : 'Ocultar'"
-        variant="text"
-        @click="toggleCollapse"
-      />
+        <!-- Botón de toggle solo visible en móvil -->
+        <BaseButton
+          v-if="isMobile"
+          :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
+          :label="isCollapsed ? 'Mostrar' : 'Ocultar'"
+          variant="text"
+          @click="toggleCollapse"
+          class="ml-4"
+        />
+      </div>
     </div>
 
     <div v-show="!isCollapsed">
-      <CustomForm :config="formConfig" :initialValues="initialValues" @search="onFormSubmit" />
+      <CustomForm
+        :config="formConfig"
+        :initialValues="initialValues"
+        @search="onFormSubmit"
+        @reset="onFormReset"
+      />
     </div>
   </div>
 </template>
@@ -24,7 +34,7 @@ import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import type { PropType } from 'vue'
 import CustomForm from '@/components/molecules/CustomForm.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
-import type { FormConfig } from '@/interfaces/BaseForm.interface'
+import type { FormConfig, FormData } from '@/interfaces/BaseForm.interface'
 
 export default defineComponent({
   name: 'CustomFilter',
@@ -46,7 +56,7 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  emits: ['filter-applied'],
+  emits: ['filter-applied', 'filter-reset'],
   setup(props, { emit }) {
     // Estado para detectar si estamos en móvil
     const isMobile = ref(false)
@@ -85,7 +95,7 @@ export default defineComponent({
     }
 
     // Cuando se aplican filtros en móvil, colapsamos automáticamente
-    const onFormSubmit = (formData: Record<string, unknown>) => {
+    const onFormSubmit = (formData: FormData) => {
       emit('filter-applied', formData)
 
       if (isMobile.value) {
@@ -93,11 +103,17 @@ export default defineComponent({
       }
     }
 
+    // Cuando se resetea el formulario
+    const onFormReset = (defaultData: FormData) => {
+      emit('filter-reset', defaultData)
+    }
+
     return {
       isMobile,
       isCollapsed,
       toggleCollapse,
       onFormSubmit,
+      onFormReset,
     }
   },
 })
