@@ -1,4 +1,11 @@
+/* Importación de Tailwind */
 @import 'tailwindcss';
+
+/* Importación del tema por defecto de Flowbite */
 @import 'flowbite/src/themes/default';
+
+/* Plugin de Flowbite */
 @plugin "flowbite/plugin";
+
+/* Configuración del directorio fuente para Flowbite */
 @source "../../node_modules/flowbite";
