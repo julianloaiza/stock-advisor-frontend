@@ -2,7 +2,7 @@ export type FieldInputType =
   | 'input-search'
   | 'input-number'
   | 'input-currency'
-  | 'checkbox'
+  | 'switch'
   | 'dropdown'
 
 export interface Field {

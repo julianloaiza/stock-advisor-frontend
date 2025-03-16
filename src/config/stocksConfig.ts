@@ -9,12 +9,12 @@ export const stocksFormConfig: FormConfig = {
       placeholder: 'Enter search text',
     },
     {
-      name: 'min_target_to',
+      name: 'minTargetTo',
       type: 'input-currency',
       placeholder: 'Min price',
     },
     {
-      name: 'max_target_to',
+      name: 'maxTargetTo',
       type: 'input-currency',
       placeholder: 'Max price',
     },
@@ -28,7 +28,7 @@ export const stocksFormConfig: FormConfig = {
     },
     {
       name: 'recommends',
-      type: 'checkbox',
+      type: 'switch',
     },
   ],
   actionLabel: 'Search',

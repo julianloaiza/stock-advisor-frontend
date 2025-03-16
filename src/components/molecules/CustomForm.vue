@@ -16,9 +16,9 @@
           v-model="formData[field.name] as string | number | undefined"
         />
 
-        <!-- Checkbox field -->
-        <BaseCheckbox
-          v-else-if="field.type === 'checkbox'"
+        <!-- Switch field -->
+        <BaseSwitch
+          v-else-if="field.type === 'switch'"
           :id="field.name"
           :label="field.placeholder || 'Recommended'"
           v-model="formData[field.name] as boolean | undefined"
@@ -43,10 +43,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, watch, onMounted } from 'vue'
 import type { PropType } from 'vue'
 import BaseInput from '../atoms/BaseInput.vue'
-import BaseCheckbox from '../atoms/BaseCheckbox.vue'
+import BaseSwitch from '../atoms/BaseSwitch.vue'
 import BaseDropdown from '../atoms/BaseDropdown.vue'
 import BaseButton from '../atoms/BaseButton.vue'
 import type { FormConfig, Field, FieldInputType } from '@/interfaces/BaseForm.interface'
@@ -55,7 +55,7 @@ export default defineComponent({
   name: 'CustomForm',
   components: {
     BaseInput,
-    BaseCheckbox,
+    BaseSwitch,
     BaseDropdown,
     BaseButton,
   },
@@ -63,6 +63,10 @@ export default defineComponent({
     config: {
       type: Object as PropType<FormConfig>,
       required: true,
+    },
+    initialValues: {
+      type: Object as PropType<Record<string, unknown>>,
+      default: () => ({}),
     },
   },
   emits: ['search'],
@@ -77,14 +81,29 @@ export default defineComponent({
         'input-search': () => '',
         'input-number': () => '',
         'input-currency': () => '',
-        checkbox: () => false,
+        switch: () => false,
         dropdown: (field) =>
           field.options && field.options.length > 0 ? field.options[0].value : '',
       }
 
       props.config.fields.forEach((field: Field) => {
-        // Usa el inicializador correspondiente al tipo de campo
-        data[field.name] = initializers[field.type](field)
+        // Primero intentamos usar el valor inicial si existe
+        if (props.initialValues && props.initialValues[field.name] !== undefined) {
+          // Manejo especial para campos numéricos (trata el valor 0 como válido)
+          if (['minTargetTo', 'maxTargetTo'].includes(field.name)) {
+            const value = props.initialValues[field.name]
+            if (value === 0 || value) {
+              data[field.name] = value as FormValue
+            } else {
+              data[field.name] = ''
+            }
+          } else {
+            data[field.name] = props.initialValues[field.name] as FormValue
+          }
+        } else {
+          // Si no hay valor inicial, usamos el inicializador
+          data[field.name] = initializers[field.type](field)
+        }
       })
 
       return data
@@ -92,8 +111,70 @@ export default defineComponent({
 
     const formData = reactive<Record<string, FormValue>>(initFormData())
 
+    // Actualizar el formulario cuando cambian los valores iniciales
+    watch(
+      () => props.initialValues,
+      (newValues) => {
+        if (newValues) {
+          Object.keys(newValues).forEach((key) => {
+            // Solo actualizar si el campo existe en el formulario
+            if (key in formData) {
+              // Manejo especial para campos numéricos (trata el valor 0 como válido)
+              if (['minTargetTo', 'maxTargetTo'].includes(key)) {
+                const value = newValues[key]
+                // Preservar valor numérico (incluso 0) o usar cadena vacía
+                formData[key] = value === 0 || value ? (value as FormValue) : ''
+              } else {
+                formData[key] = newValues[key] as FormValue
+              }
+            }
+          })
+        }
+      },
+      { deep: true, immediate: true },
+    )
+
+    // Asegurarse de que los valores iniciales se apliquen al montar el componente
+    onMounted(() => {
+      if (props.initialValues) {
+        Object.keys(props.initialValues).forEach((key) => {
+          // Solo actualizar si el campo existe en el formulario
+          if (key in formData) {
+            // Manejo especial para campos numéricos (trata el valor 0 como válido)
+            if (['minTargetTo', 'maxTargetTo'].includes(key)) {
+              const value = props.initialValues[key]
+              // Preservar valor numérico (incluso 0) o usar cadena vacía
+              formData[key] = value === 0 || value ? (value as FormValue) : ''
+            } else {
+              formData[key] = props.initialValues[key] as FormValue
+            }
+          }
+        })
+      }
+    })
+
     const handleSubmit = () => {
-      emit('search', { ...formData })
+      // Preparar datos para el envío
+      const processedData: Record<string, unknown> = {}
+
+      // Procesar cada campo para asegurar tipos correctos
+      Object.entries(formData).forEach(([key, value]) => {
+        if (['minTargetTo', 'maxTargetTo'].includes(key)) {
+          if (value === '' || value === null || value === undefined) {
+            // Enviar undefined para campos vacíos
+            processedData[key] = undefined
+          } else {
+            // Intentar convertir a número para los campos numéricos
+            const numValue = typeof value === 'number' ? value : parseFloat(String(value))
+            processedData[key] = isNaN(numValue) ? undefined : numValue
+          }
+        } else {
+          // Para otros campos, usar el valor tal cual
+          processedData[key] = value
+        }
+      })
+
+      emit('search', processedData)
     }
 
     return {
