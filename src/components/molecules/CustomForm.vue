@@ -34,9 +34,18 @@
         />
       </div>
 
-      <!-- Submit button -->
-      <div class="min-w-fit">
+      <!-- Buttons container -->
+      <div class="flex gap-2">
+        <!-- Submit button -->
         <BaseButton :label="config.actionLabel" type="submit" />
+
+        <!-- Reset button -->
+        <BaseButton
+          :label="config.clearLabel || 'Clear'"
+          variant="outline"
+          type="button"
+          @click="resetForm"
+        />
       </div>
     </div>
   </form>
@@ -69,7 +78,7 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  emits: ['search'],
+  emits: ['search', 'reset'],
   setup(props, { emit }) {
     type FormValue = string | boolean | number | undefined
 
@@ -79,8 +88,11 @@ export default defineComponent({
       'input-number': () => '',
       'input-currency': () => '',
       switch: () => false,
-      dropdown: (field) =>
-        field.options && field.options.length > 0 ? field.options[0].value : '',
+      dropdown: (field) => {
+        // Usar defaultValue si está definido, si no, usar el primer option
+        if (field.defaultValue !== undefined) return field.defaultValue
+        return field.options && field.options.length > 0 ? field.options[0].value : ''
+      },
     }
 
     // Inicializar datos del formulario
@@ -158,7 +170,7 @@ export default defineComponent({
         case 'dropdown':
           // Tratar cadena vacía como un valor válido para dropdowns
           if (name === 'currency') {
-            return value === undefined || value === '' ? 'USD' : String(value)
+            return value === undefined || value === '' ? field.defaultValue || 'USD' : String(value)
           }
           return value === undefined ? '' : String(value)
 
@@ -178,9 +190,35 @@ export default defineComponent({
       emit('search', processedData)
     }
 
+    // Función para restaurar el formulario a sus valores por defecto
+    const resetForm = () => {
+      // Crear objeto con valores por defecto
+      const defaultData: Record<string, FormValue> = {}
+
+      props.config.fields.forEach((field) => {
+        // Usar inicializador para obtener el valor por defecto
+        defaultData[field.name] = initializers[field.type](field)
+      })
+
+      // Actualizar el formData
+      Object.keys(formData).forEach((key) => {
+        formData[key] = defaultData[key]
+      })
+
+      // Procesar los valores por defecto al mismo formato que se envía en search
+      const processedDefaults: Record<string, unknown> = {}
+      Object.entries(defaultData).forEach(([key, value]) => {
+        processedDefaults[key] = processFieldValue(key, value)
+      })
+
+      // Emitir evento de reset
+      emit('reset', processedDefaults)
+    }
+
     return {
       formData,
       handleSubmit,
+      resetForm,
     }
   },
 })

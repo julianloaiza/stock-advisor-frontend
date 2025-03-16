@@ -9,6 +9,7 @@
         :formConfig="stocksFormConfig"
         :initialValues="formInitialValues"
         @filter-applied="handleFilterSubmit"
+        @filter-reset="handleFilterReset"
       />
     </div>
 
@@ -36,6 +37,7 @@ import { stocksFormConfig, stocksTableConfig } from '@/config/stocksConfig'
 import CustomFilter from '@/components/organisms/CustomFilter.vue'
 import CustomTable from '@/components/organisms/CustomTable.vue'
 import type { GetStocksParams } from '@/api/services/stockService'
+import type { FormData } from '@/interfaces/BaseForm.interface'
 
 export default defineComponent({
   name: 'StocksView',
@@ -64,6 +66,7 @@ export default defineComponent({
       ...stocksTableConfig,
       pagination: {
         ...stocksTableConfig.pagination,
+        currentPage: stockStore.currentPage,
         itemsPerPage: stockStore.itemsPerPage,
       },
     }))
@@ -78,8 +81,13 @@ export default defineComponent({
     }
 
     // Manejar envío de formulario de filtros
-    const handleFilterSubmit = (formData: Record<string, unknown>) => {
+    const handleFilterSubmit = (formData: FormData) => {
       stockStore.updateFilters(formData as Partial<GetStocksParams>)
+    }
+
+    // Manejar reset de formulario
+    const handleFilterReset = (defaultData: FormData) => {
+      stockStore.resetFilters(defaultData as Partial<GetStocksParams>)
     }
 
     // Carga inicial de datos solo si no hay datos ya cargados
@@ -95,6 +103,7 @@ export default defineComponent({
       tableConfig,
       formInitialValues,
       handleFilterSubmit,
+      handleFilterReset,
       handlePageChange,
       handlePageSizeChange,
     }

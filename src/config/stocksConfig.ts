@@ -8,21 +8,25 @@ export const stocksFormConfig: FormConfig = {
       name: 'query',
       type: 'input-search',
       placeholder: 'Enter search text',
+      defaultValue: '',
     },
     {
       name: 'minTargetTo',
       type: 'input-currency',
       placeholder: 'Min price',
+      defaultValue: '',
     },
     {
       name: 'maxTargetTo',
       type: 'input-currency',
       placeholder: 'Max price',
+      defaultValue: '',
     },
     {
       name: 'currency',
       type: 'dropdown',
       placeholder: 'Currency',
+      defaultValue: 'USD',
       options: [
         { value: 'USD', label: 'USD' },
         { value: 'EUR', label: 'EUR' },
@@ -32,9 +36,11 @@ export const stocksFormConfig: FormConfig = {
       name: 'recommends',
       type: 'switch',
       placeholder: 'Recommended',
+      defaultValue: false,
     },
   ],
   actionLabel: 'Search',
+  clearLabel: 'Clear',
 }
 
 // Configuración de la tabla de stocks
@@ -82,6 +88,7 @@ export const stocksTableConfig: TableConfig = {
       key: 'target_to',
       header: 'Target To',
       type: 'currency',
+      highlight: true,
     },
     {
       key: 'currency',
@@ -91,8 +98,8 @@ export const stocksTableConfig: TableConfig = {
   ],
   style: 'recommend',
   pagination: {
-    itemsPerPage: 10,
     currentPage: 1,
+    itemsPerPage: 10,
     pageSizeOptions: [10, 25, 50, 100],
   },
 }

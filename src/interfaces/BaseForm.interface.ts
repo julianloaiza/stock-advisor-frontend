@@ -16,6 +16,8 @@ export interface Field {
   required?: boolean
   /** Opciones para campos de tipo dropdown */
   options?: Array<{ value: string; label: string }>
+  /** Valor por defecto para el campo */
+  defaultValue?: string | number | boolean
 }
 
 export interface FormConfig {
@@ -23,4 +25,12 @@ export interface FormConfig {
   fields: Field[]
   /** Etiqueta para el botón de acción del formulario */
   actionLabel: string
+  /** Etiqueta para el botón de limpiar (opcional) */
+  clearLabel?: string
 }
+
+// Tipo para los valores de un formulario (usado en varios componentes)
+export type FormValue = string | boolean | number | undefined
+
+// Tipo para los datos procesados del formulario (usado al emitir eventos)
+export type FormData = Record<string, unknown>
