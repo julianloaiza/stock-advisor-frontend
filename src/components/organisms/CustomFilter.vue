@@ -3,9 +3,11 @@
     <div class="flex justify-between items-center mb-3">
       <h2 class="text-lg font-semibold dark:text-white">{{ title }}</h2>
 
+      <!-- Botón de toggle siempre visible en móvil, oculto en escritorio -->
       <BaseButton
-        v-if="collapsible"
+        v-if="isMobile"
         :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
+        :label="isCollapsed ? 'Mostrar' : 'Ocultar'"
         variant="text"
         @click="toggleCollapse"
       />
@@ -18,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import type { PropType } from 'vue'
 import CustomForm from '@/components/molecules/CustomForm.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
@@ -43,31 +45,56 @@ export default defineComponent({
       type: Object as PropType<Record<string, unknown>>,
       default: () => ({}),
     },
-    collapsible: {
-      type: Boolean,
-      default: false,
-    },
-    defaultCollapsed: {
-      type: Boolean,
-      default: false,
-    },
   },
   emits: ['filter-applied'],
   setup(props, { emit }) {
-    // Estado de colapso para mejorar UX en móviles
-    const isCollapsed = ref(props.defaultCollapsed)
+    // Estado para detectar si estamos en móvil
+    const isMobile = ref(false)
+
+    // Estado de colapso - en móvil inicia colapsado, en desktop inicia expandido
+    const isCollapsed = ref(false)
+
+    // Verificar el tamaño de la pantalla
+    const checkScreenSize = () => {
+      const wasMobile = isMobile.value
+      isMobile.value = window.innerWidth < 768 // md breakpoint en Tailwind
+
+      // Solo cambiamos el estado de colapso en la detección inicial
+      // o cuando cambia de escritorio a móvil o viceversa
+      if (initialCheck || wasMobile !== isMobile.value) {
+        isCollapsed.value = isMobile.value
+        initialCheck = false
+      }
+    }
+
+    let initialCheck = true
+
+    // Configurar detección de tamaño al montar y desmontar
+    onMounted(() => {
+      checkScreenSize()
+      window.addEventListener('resize', checkScreenSize)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', checkScreenSize)
+    })
 
     // Toggle para colapsar/expandir el formulario
     const toggleCollapse = () => {
       isCollapsed.value = !isCollapsed.value
     }
 
-    // Pasar los datos del formulario al componente padre
+    // Cuando se aplican filtros en móvil, colapsamos automáticamente
     const onFormSubmit = (formData: Record<string, unknown>) => {
       emit('filter-applied', formData)
+
+      if (isMobile.value) {
+        isCollapsed.value = true
+      }
     }
 
     return {
+      isMobile,
       isCollapsed,
       toggleCollapse,
       onFormSubmit,
