@@ -45,11 +45,13 @@ export const stocksTableConfig: TableConfig = {
       key: 'ticker',
       header: 'Ticker',
       type: 'text',
+      highlight: true,
     },
     {
       key: 'company',
       header: 'Company',
       type: 'text',
+      highlight: true,
     },
     {
       key: 'brokerage',
@@ -91,5 +93,6 @@ export const stocksTableConfig: TableConfig = {
   pagination: {
     itemsPerPage: 10,
     currentPage: 1,
+    pageSizeOptions: [10, 25, 50, 100],
   },
 }

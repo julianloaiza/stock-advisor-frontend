@@ -15,10 +15,15 @@
     <!-- Panel de resultados -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
       <CustomTable
-        title="Resultados"
-        :loading="stockStore.loading"
+        :config="tableConfig"
         :data="stockStore.data"
-        :error="stockStore.error"
+        :loading="stockStore.loading"
+        :error="stockStore.error || ''"
+        :current-page="stockStore.currentPage"
+        :total-pages="stockStore.totalPages"
+        :total-items="stockStore.totalItems"
+        @page-change="handlePageChange"
+        @page-size-change="handlePageSizeChange"
       />
     </div>
   </div>
@@ -27,7 +32,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, computed } from 'vue'
 import { useStockStore } from '@/stores/stockStore'
-import { stocksFormConfig } from '@/config/stocksConfig'
+import { stocksFormConfig, stocksTableConfig } from '@/config/stocksConfig'
 import CustomFilter from '@/components/organisms/CustomFilter.vue'
 import CustomTable from '@/components/organisms/CustomTable.vue'
 import type { GetStocksParams } from '@/api/services/stockService'
@@ -41,7 +46,7 @@ export default defineComponent({
   setup() {
     const stockStore = useStockStore()
 
-    // Computar los valores iniciales para el formulario a partir del store
+    // Valores iniciales para el formulario basados en el estado actual
     const formInitialValues = computed(() => {
       const { query, recommends, minTargetTo, maxTargetTo, currency } = stockStore.filters
 
@@ -54,9 +59,26 @@ export default defineComponent({
       }
     })
 
+    // Configuración de la tabla con la paginación actualizada
+    const tableConfig = computed(() => ({
+      ...stocksTableConfig,
+      pagination: {
+        ...stocksTableConfig.pagination,
+        itemsPerPage: stockStore.itemsPerPage,
+      },
+    }))
+
+    // Manejadores de eventos de paginación
+    const handlePageChange = (page: number) => {
+      stockStore.setPage(page)
+    }
+
+    const handlePageSizeChange = (size: number) => {
+      stockStore.setPageSize(size)
+    }
+
     // Manejar envío de formulario de filtros
     const handleFilterSubmit = (formData: Record<string, unknown>) => {
-      // Solo pasamos los datos al store, que ya maneja la transformación correctamente
       stockStore.updateFilters(formData as Partial<GetStocksParams>)
     }
 
@@ -70,8 +92,11 @@ export default defineComponent({
     return {
       stockStore,
       stocksFormConfig,
+      tableConfig,
       formInitialValues,
       handleFilterSubmit,
+      handlePageChange,
+      handlePageSizeChange,
     }
   },
 })

@@ -5,6 +5,8 @@ export interface TableColumn {
   header: string
   /** Tipo de columna para formateo (por ejemplo, moneda) */
   type?: 'text' | 'number' | 'currency' | 'icon'
+  /** Estilo especial para esta columna (por ejemplo, resaltado) */
+  highlight?: boolean
 }
 
 export interface PaginationConfig {
@@ -12,6 +14,8 @@ export interface PaginationConfig {
   itemsPerPage: number
   /** Número de página actual (opcional, para gestión de estado) */
   currentPage?: number
+  /** Opciones de tamaño de página */
+  pageSizeOptions?: number[]
 }
 
 export interface TableConfig {
@@ -23,4 +27,10 @@ export interface TableConfig {
   style?: 'recommend'
   /** Configuración para la paginación (BasePaginator) */
   pagination?: PaginationConfig
+}
+
+// Interfaz básica para los elementos de la tabla
+export interface TableItem {
+  [key: string]: unknown
+  id?: string | number
 }

@@ -1,4 +1,3 @@
-// src/stores/stockStore.ts
 import { defineStore } from 'pinia'
 import { getStocks } from '@/api/services/stockService'
 import type { GetStocksParams } from '@/api/services/stockService'
@@ -144,6 +143,11 @@ export const useStockStore = defineStore('stock', {
       this.updateFilters({ page })
     },
 
+    // Cambiar tamaño de página
+    setPageSize(size: number) {
+      this.updateFilters({ size, page: 1 }) // Al cambiar el tamaño de página, volvemos a la primera
+    },
+
     // Obtener datos de stocks
     async fetchStocks() {
       this.loading = true
@@ -180,6 +184,9 @@ export const useStockStore = defineStore('stock', {
     // Getters de datos
     hasResults: (state) => state.data.length > 0,
     totalPages: (state) => Math.ceil(state.total / state.size),
+    currentPage: (state) => state.page,
+    itemsPerPage: (state) => state.size,
+    totalItems: (state) => state.total,
 
     // Getters de filtros
     hasActiveFilters: (state) => {
