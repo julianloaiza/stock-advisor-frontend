@@ -15,14 +15,6 @@
         <p v-if="note" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           {{ note }}
         </p>
-
-        <!-- Información adicional con marca de tiempo -->
-        <div v-if="timestamp" class="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-          <p class="text-sm">
-            <span class="font-medium">{{ timeLabel }}:</span>
-            {{ formattedTime }}
-          </p>
-        </div>
       </div>
 
       <!-- Slot para contenido adicional -->
@@ -32,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'InfoPanel',
@@ -49,32 +41,6 @@ export default defineComponent({
       type: String,
       default: '',
     },
-    timestamp: {
-      type: Number,
-      default: undefined,
-      required: false,
-    },
-    timeLabel: {
-      type: String,
-      default: 'Última actualización',
-    },
-  },
-  setup(props) {
-    // Formatear la fecha según el formato requerido
-    const formattedTime = computed(() => {
-      if (!props.timestamp) return ''
-
-      try {
-        return new Date(props.timestamp).toLocaleString()
-      } catch (e) {
-        console.error('Error formateando fecha:', e)
-        return 'Fecha no disponible'
-      }
-    })
-
-    return {
-      formattedTime,
-    }
   },
 })
 </script>

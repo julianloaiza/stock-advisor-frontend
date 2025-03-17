@@ -1,23 +1,23 @@
 <template>
-  <div
-    class="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800"
-  >
-    <div class="flex items-center justify-center">
-      <div class="relative w-8 h-8">
-        <div
-          class="absolute top-0 left-0 w-8 h-8 border-4 border-blue-200 dark:border-blue-900 rounded-full"
-        ></div>
-        <div
-          class="absolute top-0 left-0 w-8 h-8 border-4 border-transparent border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin"
-        ></div>
-      </div>
-      <div class="ml-4">
-        <p class="font-medium text-blue-700 dark:text-blue-300">{{ message }}</p>
-        <p v-if="subMessage" class="text-sm text-blue-600/70 dark:text-blue-400/70">
-          {{ subMessage }}
-        </p>
-      </div>
+  <div class="flex items-center justify-center" :class="containerClass">
+    <div class="animate-spin rounded-full" :class="spinnerClass">
+      <svg class="w-full h-full text-current" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
     </div>
+    <span v-if="label" class="ml-2 text-gray-700 dark:text-gray-300">{{ label }}</span>
   </div>
 </template>
 
@@ -27,14 +27,46 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name: 'LoadingIndicator',
   props: {
-    message: {
+    size: {
       type: String,
-      default: 'Cargando...',
+      default: 'md', // 'sm', 'md', 'lg'
+      validator: (value: string) => ['sm', 'md', 'lg'].includes(value),
     },
-    subMessage: {
+    color: {
+      type: String,
+      default: 'primary', // 'primary', 'secondary', 'gray'
+      validator: (value: string) => ['primary', 'secondary', 'gray'].includes(value),
+    },
+    label: {
       type: String,
       default: '',
     },
+    containerClass: {
+      type: String,
+      default: '',
+    },
+  },
+  setup(props) {
+    // Definir el tamaño del spinner
+    const spinnerSizes = {
+      sm: 'h-4 w-4',
+      md: 'h-6 w-6',
+      lg: 'h-8 w-8',
+    }
+
+    // Definir los colores
+    const spinnerColors = {
+      primary: 'text-blue-600',
+      secondary: 'text-purple-600',
+      gray: 'text-gray-600',
+    }
+
+    // Calcular clases del spinner
+    const spinnerClass = `${spinnerSizes[props.size as keyof typeof spinnerSizes]} ${spinnerColors[props.color as keyof typeof spinnerColors]}`
+
+    return {
+      spinnerClass,
+    }
   },
 })
 </script>

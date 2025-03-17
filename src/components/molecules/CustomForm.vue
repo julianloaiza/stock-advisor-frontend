@@ -1,10 +1,10 @@
 <template>
   <form @submit.prevent="validateAndSubmit" class="w-full flex justify-center">
-    <div class="flex flex-wrap items-center gap-2 md:gap-4">
+    <div class="form-container flex flex-wrap items-center gap-2 md:gap-4">
       <div
         v-for="field in config.fields"
         :key="field.name"
-        class="flex-grow md:flex-grow-0 min-w-0"
+        class="field-container flex-grow md:flex-grow-0 min-w-0"
       >
         <!-- Input field -->
         <BaseInput
@@ -45,19 +45,20 @@
         />
       </div>
 
-      <!-- Submit button -->
-      <div>
+      <!-- Buttons container -->
+      <div class="buttons-container">
+        <!-- Submit button -->
         <BaseButton :label="config.actionLabel" type="submit" :disabled="disabled" />
-      </div>
 
-      <!-- Reset button (only shown if clearLabel is explicitly provided) -->
-      <div v-if="config.clearLabel">
+        <!-- Reset button (only shown if clearLabel is explicitly provided) -->
         <BaseButton
+          v-if="config.clearLabel"
           :label="config.clearLabel"
           variant="outline"
           type="button"
           @click="resetForm"
           :disabled="disabled"
+          class="mt-2 md:mt-0 md:ml-2"
         />
       </div>
     </div>
@@ -111,3 +112,34 @@ export default defineComponent({
   },
 })
 </script>
+
+<style scoped>
+/* Solo en móvil: elementos en columna y centrados */
+@media (max-width: 768px) {
+  .form-container {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .field-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .field-container input,
+  .field-container select {
+    width: 100%;
+    text-align: center;
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+</style>

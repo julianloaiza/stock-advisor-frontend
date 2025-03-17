@@ -7,7 +7,6 @@ export const syncFormConfig: FormConfig = {
       name: 'limit',
       type: 'input-number',
       placeholder: 'Número de consultas',
-      defaultValue: '1',
       required: true,
     },
   ],

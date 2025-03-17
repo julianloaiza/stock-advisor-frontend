@@ -12,7 +12,7 @@
         icon="⚠️"
       />
 
-      <!-- Formulario de sincronización -->
+      <!-- Formulario de sincronización y última actualización -->
       <div class="mt-6">
         <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg">
           <div class="text-gray-700 dark:text-gray-300 mb-4">
@@ -20,23 +20,40 @@
             10 registros de acciones bursátiles en nuestra base de datos.
           </div>
 
-          <div class="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm">
-            <CustomForm
-              ref="syncFormRef"
-              :config="syncFormConfig"
-              @search="handleSyncSubmit"
-              :disabled="loading || syncStore.syncInProgress"
-            />
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Columna izquierda: Formulario -->
+            <div class="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm">
+              <CustomForm
+                ref="syncFormRef"
+                :config="syncFormConfig"
+                @search="handleSyncSubmit"
+                :disabled="loading || syncStore.syncInProgress"
+              />
+            </div>
+
+            <!-- Columna derecha: Estado de sincronización -->
+            <div
+              class="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm flex items-center justify-center"
+            >
+              <div v-if="loading || syncStore.syncInProgress" class="flex flex-col items-center">
+                <LoadingIndicator size="lg" color="primary" label="Sincronizando datos..." />
+              </div>
+              <div v-else class="w-full flex flex-col items-center justify-center">
+                <div class="text-center mb-2 text-gray-700 dark:text-gray-300 font-medium">
+                  Última sincronización
+                </div>
+                <div class="text-center text-gray-800 dark:text-gray-200">
+                  {{
+                    syncStore.lastSyncTime
+                      ? new Date(syncStore.lastSyncTime).toLocaleString()
+                      : 'No hay sincronizaciones recientes'
+                  }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <!-- Estado de carga -->
-      <LoadingIndicator
-        v-if="loading || syncStore.syncInProgress"
-        message="Actualizando información"
-        subMessage="El proceso puede tardar varios minutos."
-      />
     </div>
 
     <!-- Panel informativo -->
@@ -44,8 +61,6 @@
       title="Al presionar Sincronizar, el sistema llevará a cabo las siguientes acciones:"
       :items="syncInfoItems"
       note="Nota: Este proceso reemplazará todos los datos actuales con los nuevos registros obtenidos."
-      :timestamp="syncStore.lastSyncTime || undefined"
-      timeLabel="Última sincronización"
     />
 
     <!-- Modal de confirmación -->

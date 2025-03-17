@@ -48,18 +48,19 @@ export function useSync() {
       // Llamar al servicio de sincronización con el límite determinado
       const response = await syncStocks(syncParams.limit)
 
-      // Marcar como exitoso y agregar notificación de éxito
+      // Marcar como exitoso y agregar notificación
       syncStore.completeSync(true)
       notificationStore.addNotification(
-        'La sincronización se ha completado exitosamente. Los datos están listos para ser visualizados.',
+        'La sincronización se ha completado exitosamente.',
         'success',
       )
+
       return response
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
       syncStore.completeSync(false)
       notificationStore.addNotification(
-        `Error durante la sincronización: ${errorMessage}. Por favor intente nuevamente.`,
+        `Error durante la sincronización: ${errorMessage}.`,
         'error',
       )
       console.error('Error en sincronización:', error)
@@ -78,7 +79,7 @@ export function useSync() {
     if (syncStore.syncInProgress) {
       syncStore.recoverFromIncompleteSync()
       notificationStore.addNotification(
-        'La sincronización anterior no se completó correctamente. Por favor intente nuevamente.',
+        'La sincronización anterior no se completó correctamente.',
         'warning',
       )
     }
