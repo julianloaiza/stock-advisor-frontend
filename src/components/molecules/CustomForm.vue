@@ -14,6 +14,7 @@
           :placeholder="field.placeholder || ''"
           :required="field.required || false"
           v-model="formData[field.name] as string | number | undefined"
+          :disabled="disabled"
         />
 
         <!-- Switch field -->
@@ -22,6 +23,7 @@
           :id="field.name"
           :label="field.placeholder || 'Recommended'"
           v-model="formData[field.name] as boolean | undefined"
+          :disabled="disabled"
         />
 
         <!-- Dropdown field -->
@@ -31,20 +33,23 @@
           :options="field.options || []"
           :modelValue="String(formData[field.name] || '')"
           @update:modelValue="(val) => (formData[field.name] = val)"
+          :disabled="disabled"
         />
       </div>
 
-      <!-- Buttons container -->
-      <div class="flex gap-2">
-        <!-- Submit button -->
-        <BaseButton :label="config.actionLabel" type="submit" />
+      <!-- Submit button -->
+      <div>
+        <BaseButton :label="config.actionLabel" type="submit" :disabled="disabled" />
+      </div>
 
-        <!-- Reset button -->
+      <!-- Reset button (only shown if clearLabel is explicitly provided) -->
+      <div v-if="config.clearLabel">
         <BaseButton
-          :label="config.clearLabel || 'Clear'"
+          :label="config.clearLabel"
           variant="outline"
           type="button"
           @click="resetForm"
+          :disabled="disabled"
         />
       </div>
     </div>
@@ -76,6 +81,10 @@ export default defineComponent({
     initialValues: {
       type: Object as PropType<Record<string, unknown>>,
       default: () => ({}),
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ['search', 'reset'],
@@ -180,6 +189,8 @@ export default defineComponent({
     }
 
     const handleSubmit = () => {
+      if (props.disabled) return
+
       // Preparar datos procesados según tipo de cada campo
       const processedData: Record<string, unknown> = {}
 
@@ -192,6 +203,8 @@ export default defineComponent({
 
     // Función para restaurar el formulario a sus valores por defecto
     const resetForm = () => {
+      if (props.disabled) return
+
       // Crear objeto con valores por defecto
       const defaultData: Record<string, FormValue> = {}
 

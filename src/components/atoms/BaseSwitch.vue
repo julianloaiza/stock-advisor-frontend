@@ -1,10 +1,15 @@
 <template>
-  <label :for="id" class="inline-flex items-center cursor-pointer">
+  <label
+    :for="id"
+    class="inline-flex items-center"
+    :class="{ 'cursor-pointer': !disabled, 'opacity-50 cursor-not-allowed': disabled }"
+  >
     <input
       :id="id"
       type="checkbox"
       :checked="modelValue"
       @change="handleToggle($event)"
+      :disabled="disabled"
       class="sr-only peer"
     />
     <div
@@ -34,10 +39,15 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['update:modelValue'],
   methods: {
     handleToggle(event: Event) {
+      if (this.disabled) return
       const target = event.target as HTMLInputElement
       this.$emit('update:modelValue', target.checked)
     },

@@ -3,8 +3,9 @@
     <button
       :id="id"
       type="button"
-      @click="isOpen = !isOpen"
-      class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 flex justify-between items-center"
+      @click="!disabled && (isOpen = !isOpen)"
+      class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 flex justify-between items-center disabled:opacity-50 disabled:cursor-not-allowed"
+      :disabled="disabled"
     >
       {{ selectedLabel }}
       <svg
@@ -25,7 +26,7 @@
     </button>
 
     <div
-      v-if="isOpen"
+      v-if="isOpen && !disabled"
       class="absolute z-10 mt-1 w-full bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700"
     >
       <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
@@ -62,6 +63,10 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
@@ -73,6 +78,7 @@ export default defineComponent({
     })
 
     const selectOption = (value: string) => {
+      if (props.disabled) return
       emit('update:modelValue', value)
       isOpen.value = false
     }
