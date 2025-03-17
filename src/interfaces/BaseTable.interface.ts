@@ -4,7 +4,7 @@ export interface TableColumn {
   /** Título del encabezado para la columna */
   header: string
   /** Tipo de columna para formateo (por ejemplo, moneda) */
-  type?: 'text' | 'number' | 'currency'
+  type?: 'text' | 'number' | 'currency' | 'icon'
   /** Estilo especial para esta columna (por ejemplo, resaltado) */
   highlight?: boolean
 }

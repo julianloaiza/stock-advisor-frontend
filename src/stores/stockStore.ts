@@ -1,3 +1,4 @@
+// src/stores/stockStore.ts
 import { defineStore } from 'pinia'
 import type { Stock } from '@/interfaces/Stock.interface'
 import type { GetStocksParams } from '@/api/services/stockService'
@@ -24,7 +25,6 @@ interface StockState {
   filters: GetStocksParams
 }
 
-// Sintaxis correcta: defineStore('id', options)
 export const useStockStore = defineStore('stock', {
   state: (): StockState => ({
     data: [],
@@ -36,24 +36,26 @@ export const useStockStore = defineStore('stock', {
 
   getters: {
     totalPages(state): number {
-      // Asegurar que size nunca sea undefined usando un valor por defecto
-      const size = state.filters.size || DEFAULT_FILTERS.size
+      const size = state.filters.size ?? DEFAULT_FILTERS.size
       return Math.ceil(state.total / size) || 1
     },
+
     hasResults(state): boolean {
       return state.data.length > 0
     },
+
     currentPage(state): number {
-      // Asegurar que page nunca sea undefined
-      return state.filters.page || DEFAULT_FILTERS.page
+      return state.filters.page ?? DEFAULT_FILTERS.page
     },
+
     itemsPerPage(state): number {
-      // Asegurar que size nunca sea undefined
-      return state.filters.size || DEFAULT_FILTERS.size
+      return state.filters.size ?? DEFAULT_FILTERS.size
     },
+
     totalItems(state): number {
       return state.total
     },
+
     hasActiveFilters(state): boolean {
       return (
         state.filters.query !== '' ||
@@ -72,9 +74,14 @@ export const useStockStore = defineStore('stock', {
 
       try {
         // Filtrar valores undefined para la API
-        const activeFilters = Object.fromEntries(
-          Object.entries(this.filters).filter(([, value]) => value !== undefined),
-        ) as unknown as GetStocksParams
+        const activeFilters: GetStocksParams = { ...this.filters }
+
+        // Eliminar las propiedades undefined
+        Object.keys(activeFilters).forEach((key) => {
+          if (activeFilters[key as keyof GetStocksParams] === undefined) {
+            delete activeFilters[key as keyof GetStocksParams]
+          }
+        })
 
         const response = await getStocks(activeFilters)
 
@@ -82,9 +89,8 @@ export const useStockStore = defineStore('stock', {
         this.total = response.data.total
 
         // Actualizar estado de paginación con lo que responde el servidor
-        // Asegurar que nunca se asigna undefined
-        this.filters.page = response.data.page || DEFAULT_FILTERS.page
-        this.filters.size = response.data.size || DEFAULT_FILTERS.size
+        this.filters.page = response.data.page ?? DEFAULT_FILTERS.page
+        this.filters.size = response.data.size ?? DEFAULT_FILTERS.size
 
         return response
       } catch (err) {
@@ -97,8 +103,12 @@ export const useStockStore = defineStore('stock', {
     },
 
     updateFilters(newFilters: Partial<GetStocksParams>) {
-      // Si cambiamos filtros (no paginación), reseteamos a página 1
-      if (Object.keys(newFilters).some((key) => key !== 'page' && key !== 'size')) {
+      // Resetear a página 1 si cambian filtros que no son de paginación
+      const isContentFilterChanged = Object.keys(newFilters).some(
+        (key) => key !== 'page' && key !== 'size',
+      )
+
+      if (isContentFilterChanged) {
         this.filters.page = DEFAULT_FILTERS.page
       }
 
@@ -113,10 +123,13 @@ export const useStockStore = defineStore('stock', {
     },
 
     resetFilters(defaultData?: Partial<GetStocksParams>) {
+      // Mantener el tamaño de página pero resetear a la primera página
+      const currentSize = this.filters.size ?? DEFAULT_FILTERS.size
+
       this.filters = {
         ...DEFAULT_FILTERS,
-        size: this.filters.size || DEFAULT_FILTERS.size, // Mantener el tamaño de página actual
-        ...defaultData, // Aplicar valores por defecto proporcionados
+        size: currentSize,
+        ...defaultData,
         page: DEFAULT_FILTERS.page, // Siempre volver a la primera página
       }
 

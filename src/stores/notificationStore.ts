@@ -13,6 +13,7 @@ export interface Notification {
 }
 
 const STORAGE_KEY = 'stock-advisor-notifications'
+const DUPLICATE_THRESHOLD = 5000 // 5 segundos
 const MAX_NOTIFICATIONS = 50 // Límite máximo de notificaciones guardadas
 const MAX_NOTIFICATION_AGE = 14 * 24 * 60 * 60 * 1000 // 14 días en milisegundos
 
@@ -51,7 +52,7 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   }
 
-  // Limpiar notificaciones viejas al iniciar
+  // Limpiar notificaciones viejas
   const pruneOldNotifications = () => {
     const now = Date.now()
     const previousLength = notifications.value.length
@@ -72,7 +73,8 @@ export const useNotificationStore = defineStore('notification', () => {
   function addNotification(message: string, type: NotificationType = 'info') {
     // Evitar duplicados recientes (mismos mensajes en los últimos 5 segundos)
     const recentDuplicate = notifications.value.find(
-      (n) => n.message === message && n.type === type && Date.now() - n.timestamp < 5000,
+      (n) =>
+        n.message === message && n.type === type && Date.now() - n.timestamp < DUPLICATE_THRESHOLD,
     )
 
     if (recentDuplicate) {

@@ -1,11 +1,11 @@
 <template>
   <div class="relative">
     <!-- Botón de notificaciones -->
-    <button
+    <base-button
       :id="`${componentId}-button`"
+      variant="icon"
       @click="toggleDropdown"
-      class="relative inline-flex items-center text-sm font-medium text-center text-gray-500 hover:text-gray-900 focus:outline-none dark:hover:text-white dark:text-gray-400"
-      type="button"
+      class="relative"
     >
       <svg
         class="w-5 h-5"
@@ -24,7 +24,7 @@
         v-if="notificationStore.unreadCount > 0"
         class="absolute block w-3 h-3 bg-red-500 border-2 border-white rounded-full -top-0.5 start-2.5 dark:border-gray-900"
       ></div>
-    </button>
+    </base-button>
 
     <!-- Dropdown menu - Centrado debajo del botón -->
     <div
@@ -57,133 +57,30 @@
         </div>
 
         <!-- Listado de notificaciones -->
-        <div
+        <notification-item
           v-for="notification in notificationStore.notifications"
           :key="notification.id"
-          class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-          @click="handleNotificationClick(notification)"
-        >
-          <div class="shrink-0">
-            <!-- Iconos según el tipo de notificación -->
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-full"
-              :class="getNotificationIconClass(notification.type)"
-            >
-              <!-- Success -->
-              <svg
-                v-if="notification.type === 'success'"
-                class="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-
-              <!-- Error -->
-              <svg
-                v-else-if="notification.type === 'error'"
-                class="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-
-              <!-- Warning -->
-              <svg
-                v-else-if="notification.type === 'warning'"
-                class="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-
-              <!-- Info -->
-              <svg
-                v-else
-                class="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <div class="w-full ps-3">
-            <div
-              :class="
-                notification.read ? 'text-gray-500' : 'text-gray-700 font-medium dark:text-gray-300'
-              "
-              class="text-sm mb-1.5 dark:text-gray-400"
-            >
-              {{ notification.message }}
-            </div>
-            <div class="text-xs text-blue-600 dark:text-blue-500">
-              {{ formatTime(notification.timestamp) }}
-            </div>
-          </div>
-
-          <!-- Botón para eliminar notificación -->
-          <button
-            @click.stop="removeNotification(notification.id)"
-            class="ml-auto text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
-            aria-label="Eliminar notificación"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              stroke-width="2"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
+          :notification="notification"
+          @click="handleNotificationClick"
+          @remove="removeNotification"
+        />
       </div>
 
       <div class="flex py-2 text-sm justify-between px-4 bg-gray-50 dark:bg-gray-800">
-        <button
+        <base-button
           v-if="notificationStore.hasNotifications"
           @click="notificationStore.markAllAsRead()"
+          variant="link"
+          label="Marcar todo como leído"
           class="text-blue-600 hover:underline dark:text-blue-500"
-        >
-          Marcar todo como leído
-        </button>
-        <button
+        />
+        <base-button
           v-if="notificationStore.hasNotifications"
           @click="notificationStore.clearAllNotifications()"
+          variant="link"
+          label="Borrar todo"
           class="text-red-600 hover:underline dark:text-red-500"
-        >
-          Borrar todo
-        </button>
+        />
       </div>
     </div>
   </div>
@@ -192,10 +89,16 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import { useNotificationStore } from '@/stores/notificationStore'
-import type { Notification, NotificationType } from '@/stores/notificationStore'
+import type { Notification } from '@/stores/notificationStore'
+import BaseButton from '@/components/atoms/BaseButton.vue'
+import NotificationItem from '@/components/atoms/NotificationItem.vue'
 
 export default defineComponent({
   name: 'NotificationDropdown',
+  components: {
+    BaseButton,
+    NotificationItem,
+  },
   setup() {
     const notificationStore = useNotificationStore()
     const isOpen = ref(false)
@@ -238,52 +141,6 @@ export default defineComponent({
       isOpen.value = !isOpen.value
     }
 
-    // Formatear tiempo relativo mejorado
-    const formatTime = (timestamp: number): string => {
-      try {
-        const now = Date.now()
-        const diffSeconds = Math.floor((now - timestamp) / 1000)
-
-        if (diffSeconds < 5) return 'Ahora mismo'
-        if (diffSeconds < 60) return 'Hace unos segundos'
-        if (diffSeconds < 3600) {
-          const minutes = Math.floor(diffSeconds / 60)
-          return `Hace ${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`
-        }
-        if (diffSeconds < 86400) {
-          const hours = Math.floor(diffSeconds / 3600)
-          return `Hace ${hours} ${hours === 1 ? 'hora' : 'horas'}`
-        }
-
-        // Para fechas más antiguas, mostrar la fecha formateada
-        const days = Math.floor(diffSeconds / 86400)
-        if (days <= 30) {
-          return `Hace ${days} ${days === 1 ? 'día' : 'días'}`
-        } else {
-          const date = new Date(timestamp)
-          return date.toLocaleDateString()
-        }
-      } catch (e) {
-        console.error('Error formateando tiempo:', e)
-        return 'Fecha desconocida'
-      }
-    }
-
-    // Obtener clase CSS para el ícono según tipo de notificación
-    const getNotificationIconClass = (type: NotificationType): string => {
-      switch (type) {
-        case 'success':
-          return 'bg-green-100 text-green-600 dark:bg-green-800 dark:text-green-200'
-        case 'error':
-          return 'bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-200'
-        case 'warning':
-          return 'bg-orange-100 text-orange-600 dark:bg-orange-700 dark:text-orange-200'
-        case 'info':
-        default:
-          return 'bg-blue-100 text-blue-600 dark:bg-blue-800 dark:text-blue-200'
-      }
-    }
-
     // Cerrar al presionar Escape
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen.value) {
@@ -309,8 +166,6 @@ export default defineComponent({
       toggleDropdown,
       handleNotificationClick,
       removeNotification,
-      formatTime,
-      getNotificationIconClass,
     }
   },
 })

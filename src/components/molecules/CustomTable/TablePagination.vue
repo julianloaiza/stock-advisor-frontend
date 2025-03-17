@@ -121,11 +121,15 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['page-change'],
   setup(props) {
-    // Deshabilitar paginación cuando está cargando o no hay resultados
-    const isDisabled = computed(() => props.loading || !props.hasResults)
+    // Deshabilitar paginación cuando está cargando, no hay resultados, o está explícitamente deshabilitado
+    const isDisabled = computed(() => props.loading || !props.hasResults || props.disabled)
 
     // Calcular el rango de páginas a mostrar
     const paginationRange = computed(() => {

@@ -15,40 +15,45 @@
 
     <!-- Panel de resultados -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+      <!-- Banner de recomendaciones -->
+      <AlertBanner
+        :show="shouldShowRecommendations"
+        message="Las acciones destacadas representan las mejores oportunidades de inversión según nuestro algoritmo."
+        icon="💡"
+      />
+
+      <!-- Banner de datos actualizados -->
+      <AlertBanner
+        :show="hasPendingDataUpdate"
+        message="Los datos han sido actualizados recientemente. Por favor realice una nueva búsqueda para ver la información más reciente."
+        icon="🔄"
+        type="info"
+      />
+
       <CustomTable
         :config="tableConfig"
-        :data="stockStore.data"
-        :loading="stockStore.loading"
-        :error="stockStore.error || ''"
-        :current-page="stockStore.currentPage"
-        :total-pages="stockStore.totalPages"
-        :total-items="stockStore.totalItems"
-        :highlighted-rows="getHighlightedRowsCount"
+        :data="stockData"
+        :loading="stockLoading"
+        :error="stockError || ''"
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        :total-items="totalItems"
+        :highlighted-rows="highlightedRowsCount"
+        :pagination-disabled="hasPendingDataUpdate"
         @page-change="handlePageChange"
         @page-size-change="handlePageSizeChange"
-      >
-        <!-- Slot para el banner de recomendaciones -->
-        <template #banner>
-          <AlertBanner
-            :show="shouldShowRecommendations"
-            message="Las acciones destacadas representan las mejores oportunidades de inversión según nuestro algoritmo."
-            icon="💡"
-          />
-        </template>
-      </CustomTable>
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, computed } from 'vue'
-import { useStockStore } from '@/stores/stockStore'
-import { stocksFormConfig, stocksTableConfig } from '@/config/stocksConfig'
+import { defineComponent, onMounted } from 'vue'
+import { useStocks } from '@/composables/useStocks'
+import { stocksFormConfig } from '@/config/stocksConfig'
 import CustomFilter from '@/components/organisms/CustomFilter.vue'
 import CustomTable from '@/components/organisms/CustomTable.vue'
 import AlertBanner from '@/components/atoms/AlertBanner.vue'
-import type { GetStocksParams } from '@/api/services/stockService'
-import type { FormData } from '@/interfaces/BaseForm.interface'
 
 export default defineComponent({
   name: 'StocksView',
@@ -58,67 +63,41 @@ export default defineComponent({
     AlertBanner,
   },
   setup() {
-    const stockStore = useStockStore()
-
-    // Valores iniciales para el formulario basados en el estado actual
-    const formInitialValues = computed(() => {
-      const { query, recommends, minTargetTo, maxTargetTo, currency } = stockStore.filters
-
-      return {
-        query: query || '',
-        recommends: Boolean(recommends),
-        minTargetTo: minTargetTo !== undefined ? minTargetTo : '',
-        maxTargetTo: maxTargetTo !== undefined ? maxTargetTo : '',
-        currency: currency || 'USD',
-      }
-    })
-
-    // Lógica para determinar cuándo mostrar recomendaciones
-    const shouldShowRecommendations = computed(
-      () =>
-        stockStore.filters.recommends === true &&
-        stockStore.currentPage === 1 &&
-        !stockStore.error &&
-        stockStore.hasResults,
-    )
-
-    // Número de filas a destacar
-    const getHighlightedRowsCount = computed(() =>
-      shouldShowRecommendations.value ? Math.min(3, stockStore.data.length) : 0,
-    )
-
-    // Configuración de la tabla con la paginación actualizada
-    const tableConfig = computed(() => ({
-      ...stocksTableConfig,
-      pagination: {
-        ...stocksTableConfig.pagination,
-        currentPage: stockStore.currentPage,
-        itemsPerPage: stockStore.itemsPerPage,
-      },
-    }))
-
-    // Manejadores de eventos
-    const handlePageChange = (page: number) => stockStore.setPage(page)
-    const handlePageSizeChange = (size: number) => stockStore.setPageSize(size)
-    const handleFilterSubmit = (formData: FormData) =>
-      stockStore.updateFilters(formData as Partial<GetStocksParams>)
-    const handleFilterReset = (defaultData: FormData) =>
-      stockStore.resetFilters(defaultData as Partial<GetStocksParams>)
-
-    // Carga inicial de datos solo si no hay datos ya cargados
-    onMounted(() => {
-      if (!stockStore.hasResults && !stockStore.loading) {
-        stockStore.fetchStocks()
-      }
-    })
-
-    return {
-      stockStore,
-      stocksFormConfig,
+    const {
+      stockData,
+      stockLoading,
+      stockError,
+      currentPage,
+      totalPages,
+      totalItems,
       tableConfig,
       formInitialValues,
       shouldShowRecommendations,
-      getHighlightedRowsCount,
+      highlightedRowsCount,
+      hasPendingDataUpdate,
+      handlePageChange,
+      handlePageSizeChange,
+      handleFilterSubmit,
+      handleFilterReset,
+      loadInitialData,
+    } = useStocks()
+
+    // Carga inicial de datos
+    onMounted(loadInitialData)
+
+    return {
+      stocksFormConfig,
+      stockData,
+      stockLoading,
+      stockError,
+      currentPage,
+      totalPages,
+      totalItems,
+      tableConfig,
+      formInitialValues,
+      shouldShowRecommendations,
+      highlightedRowsCount,
+      hasPendingDataUpdate,
       handleFilterSubmit,
       handleFilterReset,
       handlePageChange,
