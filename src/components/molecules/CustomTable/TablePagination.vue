@@ -25,7 +25,10 @@
         @click="$emit('page-change', currentPage - 1)"
         :disabled="isDisabled || currentPage === 1"
         class="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-        :class="{ 'opacity-50 cursor-not-allowed': isDisabled || currentPage === 1 }"
+        :class="{
+          'opacity-50 cursor-not-allowed': isDisabled || currentPage === 1,
+          'cursor-pointer': !(isDisabled || currentPage === 1),
+        }"
         aria-label="Página anterior"
       >
         <svg
@@ -52,7 +55,7 @@
             page === currentPage
               ? 'text-blue-600 border-blue-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white'
               : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white',
-            isDisabled ? 'opacity-50 cursor-not-allowed' : '',
+            isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
           ]"
         >
           {{ page }}
@@ -71,7 +74,10 @@
         @click="$emit('page-change', currentPage + 1)"
         :disabled="isDisabled || currentPage === totalPages"
         class="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-        :class="{ 'opacity-50 cursor-not-allowed': isDisabled || currentPage === totalPages }"
+        :class="{
+          'opacity-50 cursor-not-allowed': isDisabled || currentPage === totalPages,
+          'cursor-pointer': !(isDisabled || currentPage === totalPages),
+        }"
         aria-label="Página siguiente"
       >
         <svg
