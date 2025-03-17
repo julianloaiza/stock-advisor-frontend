@@ -1,98 +1,55 @@
 <template>
-  <div
-    class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-    @click="$emit('click', notification)"
-  >
-    <div class="shrink-0">
-      <!-- Iconos según el tipo de notificación -->
-      <div class="flex items-center justify-center w-8 h-8 rounded-full" :class="getIconClass">
-        <!-- Success -->
-        <svg
+  <div class="relative flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+    <div
+      class="shrink-0 flex items-center justify-center w-8 h-8 rounded-full"
+      :class="getIconClass"
+    >
+      <svg
+        class="w-4 h-4"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+      >
+        <path
           v-if="notification.type === 'success'"
-          class="w-4 h-4"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-
-        <!-- Error -->
-        <svg
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M5 13l4 4L19 7"
+        />
+        <path
           v-else-if="notification.type === 'error'"
-          class="w-4 h-4"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-
-        <!-- Warning -->
-        <svg
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M6 18L18 6M6 6l12 12"
+        />
+        <path
           v-else-if="notification.type === 'warning'"
-          class="w-4 h-4"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
-        </svg>
-
-        <!-- Info -->
-        <svg
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 9v2m0 4h.01M6 18h12M3 3h18"
+        />
+        <path
           v-else
-          class="w-4 h-4"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </div>
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
     </div>
 
-    <div class="w-full ps-3">
-      <div
-        :class="
-          notification.read ? 'text-gray-500' : 'text-gray-700 font-medium dark:text-gray-300'
-        "
-        class="text-sm mb-1.5 dark:text-gray-400"
-      >
-        {{ notification.message }}
-      </div>
-      <time
-        :datetime="new Date(notification.timestamp).toISOString()"
-        class="text-xs text-blue-600 dark:text-blue-500"
-      >
+    <div class="w-full ps-3 text-sm text-gray-700 dark:text-gray-300">
+      {{ notification.message }}
+      <time class="block text-xs text-blue-600 dark:text-blue-500">
         {{ formatRelativeTime(notification.timestamp) }}
       </time>
     </div>
 
-    <!-- Botón para eliminar notificación -->
     <button
       @click.stop="$emit('remove', notification.id)"
-      class="ml-auto text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+      class="absolute top-2 right-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer"
       aria-label="Eliminar notificación"
     >
       <svg
@@ -122,9 +79,9 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['click', 'remove'],
+  emits: ['remove'],
   setup(props) {
-    // Obtener clase CSS para el ícono según tipo de notificación
+    // Obtener clase CSS para el ícono según el tipo de notificación
     const getIconClass = computed((): string => {
       switch (props.notification.type) {
         case 'success':

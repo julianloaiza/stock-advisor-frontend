@@ -5,7 +5,7 @@
       :id="`${componentId}-button`"
       variant="icon"
       @click="toggleDropdown"
-      class="relative"
+      class="relative cursor-pointer"
     >
       <svg
         class="w-5 h-5"
@@ -26,25 +26,14 @@
       ></div>
     </base-button>
 
-    <!-- Dropdown menu - Centrado debajo del botón -->
+    <!-- Dropdown menu -->
     <div
       v-show="isOpen"
       :id="`${componentId}-content`"
       class="z-20 absolute transform -translate-x-1/2 left-1/2 mt-2 w-80 max-w-sm bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-800 dark:divide-gray-700"
-      aria-labelledby="dropdownNotificationButton"
     >
-      <div
-        class="block px-4 py-2 font-medium text-center text-gray-700 rounded-t-lg bg-gray-50 dark:bg-gray-800 dark:text-white"
-      >
-        <div class="flex justify-between items-center">
-          <span>Notificaciones</span>
-          <span
-            v-if="notificationStore.unreadCount > 0"
-            class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
-          >
-            {{ notificationStore.unreadCount }} nuevas
-          </span>
-        </div>
+      <div class="block px-4 py-2 font-medium text-center text-gray-700 dark:text-white">
+        Notificaciones
       </div>
 
       <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-80 overflow-y-auto">
@@ -61,25 +50,18 @@
           v-for="notification in notificationStore.notifications"
           :key="notification.id"
           :notification="notification"
-          @click="handleNotificationClick"
           @remove="removeNotification"
         />
       </div>
 
-      <div class="flex py-2 text-sm justify-between px-4 bg-gray-50 dark:bg-gray-800">
-        <base-button
-          v-if="notificationStore.hasNotifications"
-          @click="notificationStore.markAllAsRead()"
-          variant="link"
-          label="Marcar todo como leído"
-          class="text-blue-600 hover:underline dark:text-blue-500"
-        />
+      <!-- Botón para borrar todas las notificaciones -->
+      <div class="flex py-2 text-sm justify-end px-4 bg-gray-50 dark:bg-gray-800">
         <base-button
           v-if="notificationStore.hasNotifications"
           @click="notificationStore.clearAllNotifications()"
           variant="link"
           label="Borrar todo"
-          class="text-red-600 hover:underline dark:text-red-500"
+          class="text-red-600 hover:underline dark:text-red-500 cursor-pointer"
         />
       </div>
     </div>
@@ -89,7 +71,6 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
 import { useNotificationStore } from '@/stores/notificationStore'
-import type { Notification } from '@/stores/notificationStore'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import NotificationItem from '@/components/atoms/NotificationItem.vue'
 
@@ -102,13 +83,9 @@ export default defineComponent({
   setup() {
     const notificationStore = useNotificationStore()
     const isOpen = ref(false)
-
-    // Identificador único para los elementos del DOM
     const componentId = `notification-dropdown-${Date.now()}`
 
-    // Cerrar el dropdown al hacer clic fuera - optimizado
     const handleClickOutside = (event: MouseEvent) => {
-      // Solo procesar si el dropdown está abierto
       if (!isOpen.value) return
 
       const button = document.getElementById(`${componentId}-button`)
@@ -124,39 +101,19 @@ export default defineComponent({
       }
     }
 
-    // Manejar clic en una notificación
-    const handleNotificationClick = (notification: Notification) => {
-      if (!notification.read) {
-        notificationStore.markAsRead(notification.id)
-      }
-    }
-
-    // Eliminar una notificación
-    const removeNotification = (id: string) => {
-      notificationStore.removeNotification(id)
-    }
-
-    // Alternar visibilidad del dropdown
     const toggleDropdown = () => {
       isOpen.value = !isOpen.value
-    }
-
-    // Cerrar al presionar Escape
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen.value) {
-        isOpen.value = false
+      if (isOpen.value) {
+        notificationStore.markAllAsRead()
       }
     }
 
-    // Agregar/eliminar listeners de eventos
     onMounted(() => {
       document.addEventListener('click', handleClickOutside)
-      document.addEventListener('keydown', handleKeyDown)
     })
 
     onUnmounted(() => {
       document.removeEventListener('click', handleClickOutside)
-      document.removeEventListener('keydown', handleKeyDown)
     })
 
     return {
@@ -164,8 +121,7 @@ export default defineComponent({
       notificationStore,
       isOpen,
       toggleDropdown,
-      handleNotificationClick,
-      removeNotification,
+      removeNotification: notificationStore.removeNotification,
     }
   },
 })
