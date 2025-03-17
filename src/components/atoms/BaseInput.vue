@@ -36,7 +36,7 @@
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
-          d="M5 1v3m5-3v3m5-3v3M1 7h18M5 11h2m2 0h2m2 0h2M1 7v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7"
+          d="M6 2h8M6 6h8M6 10h8M6 14h8M6 18h8"
         />
       </svg>
 
@@ -68,8 +68,13 @@
       :disabled="disabled"
       @input="updateValue($event)"
       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="{ 'ps-10': showIcon }"
+      :class="[
+        { 'ps-10': showIcon },
+        { 'border-red-500 focus:ring-red-500 focus:border-red-500': showError },
+      ]"
     />
+
+    <ErrorMessage :show="showError" :message="errorMessage" />
   </div>
 </template>
 
@@ -77,9 +82,13 @@
 import { defineComponent, computed } from 'vue'
 import type { PropType } from 'vue'
 import type { FieldInputType } from '@/interfaces/BaseForm.interface'
+import ErrorMessage from './ErrorMessage.vue'
 
 export default defineComponent({
   name: 'BaseInput',
+  components: {
+    ErrorMessage,
+  },
   props: {
     id: {
       type: String,
@@ -106,6 +115,14 @@ export default defineComponent({
     disabled: {
       type: Boolean,
       default: false,
+    },
+    showError: {
+      type: Boolean,
+      default: false,
+    },
+    errorMessage: {
+      type: String,
+      default: 'This field is required',
     },
   },
   emits: ['update:modelValue'],

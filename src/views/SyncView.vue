@@ -22,6 +22,7 @@
 
           <div class="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm">
             <CustomForm
+              ref="syncFormRef"
               :config="syncFormConfig"
               @search="handleSyncSubmit"
               :disabled="loading || syncStore.syncInProgress"
@@ -82,6 +83,9 @@ export default defineComponent({
     LoadingIndicator,
   },
   setup() {
+    // Referencia al formulario para poder acceder a sus métodos
+    const syncFormRef = ref<InstanceType<typeof CustomForm> | null>(null)
+
     // Lista de información para el panel informativo
     const syncInfoItems = ref([
       'Eliminará por completo los datos financieros existentes en el sistema, asegurando que no quede información desactualizada.',
@@ -96,10 +100,22 @@ export default defineComponent({
       syncParams,
       syncStore,
       handleSyncSubmit,
-      confirmSync,
+      confirmSync: originalConfirmSync,
       cancelSync,
       checkIncompleteSync,
     } = useSync()
+
+    // Personalizar la función confirmSync para resetear el formulario después de una sincronización exitosa
+    const confirmSync = async () => {
+      const success = await originalConfirmSync()
+
+      if (success && syncFormRef.value) {
+        // Resetear el formulario después de una sincronización exitosa
+        syncFormRef.value.resetForm()
+      }
+
+      return success
+    }
 
     // Al montar el componente, verificar si hay una sincronización en curso
     onMounted(() => {
@@ -107,6 +123,7 @@ export default defineComponent({
     })
 
     return {
+      syncFormRef,
       syncFormConfig,
       syncParams,
       syncInfoItems,

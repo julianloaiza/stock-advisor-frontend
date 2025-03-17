@@ -14,7 +14,7 @@
     </div>
 
     <!-- Panel de resultados -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 px-5 sm:px-10 py-5">
       <!-- Banner de recomendaciones -->
       <AlertBanner
         :show="shouldShowRecommendations"

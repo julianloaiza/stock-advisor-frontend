@@ -8,6 +8,7 @@ export const syncFormConfig: FormConfig = {
       type: 'input-number',
       placeholder: 'Número de consultas',
       defaultValue: '1',
+      required: true,
     },
   ],
   actionLabel: 'Sincronizar',

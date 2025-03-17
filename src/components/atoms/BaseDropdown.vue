@@ -5,6 +5,7 @@
       type="button"
       @click="!disabled && (isOpen = !isOpen)"
       class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 flex justify-between items-center disabled:opacity-50 disabled:cursor-not-allowed"
+      :class="{ 'border-red-500 focus:ring-red-500 focus:border-red-500': showError }"
       :disabled="disabled"
     >
       {{ selectedLabel }}
@@ -41,15 +42,21 @@
         </li>
       </ul>
     </div>
+
+    <ErrorMessage :show="showError" :message="errorMessage" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import type { PropType } from 'vue'
+import ErrorMessage from './ErrorMessage.vue'
 
 export default defineComponent({
   name: 'BaseDropdown',
+  components: {
+    ErrorMessage,
+  },
   props: {
     id: {
       type: String,
@@ -66,6 +73,18 @@ export default defineComponent({
     disabled: {
       type: Boolean,
       default: false,
+    },
+    required: {
+      type: Boolean,
+      default: false,
+    },
+    showError: {
+      type: Boolean,
+      default: false,
+    },
+    errorMessage: {
+      type: String,
+      default: 'This field is required',
     },
   },
   emits: ['update:modelValue'],

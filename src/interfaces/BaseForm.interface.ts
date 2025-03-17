@@ -18,6 +18,8 @@ export interface Field {
   options?: Array<{ value: string; label: string }>
   /** Valor por defecto para el campo */
   defaultValue?: string | number | boolean
+  /** Mensaje de error personalizado para el campo */
+  errorMessage?: string
 }
 
 export interface FormConfig {
@@ -27,6 +29,8 @@ export interface FormConfig {
   actionLabel: string
   /** Etiqueta para el botón de limpiar (opcional) */
   clearLabel?: string
+  /** Mensaje de error por defecto para campos requeridos */
+  defaultErrorMessage?: string
 }
 
 // Tipo para los valores de un formulario (usado en varios componentes)
@@ -34,3 +38,6 @@ export type FormValue = string | boolean | number | undefined
 
 // Tipo para los datos procesados del formulario (usado al emitir eventos)
 export type FormData = Record<string, unknown>
+
+// Tipo para el seguimiento de errores en campos
+export type FieldErrors = Record<string, boolean>
