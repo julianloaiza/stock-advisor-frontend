@@ -21,17 +21,21 @@
           </div>
 
           <div class="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm">
-            <CustomForm :config="syncFormConfig" @search="handleSyncSubmit" :disabled="loading" />
+            <CustomForm
+              :config="syncFormConfig"
+              @search="handleSyncSubmit"
+              :disabled="loading || syncStore.syncInProgress"
+            />
           </div>
         </div>
       </div>
 
       <!-- Estado de carga -->
       <div
-        v-if="loading"
+        v-if="loading || syncStore.syncInProgress"
         class="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800"
       >
-        <div class="flex items-center">
+        <div class="flex items-center justify-center">
           <div class="relative w-8 h-8">
             <div
               class="absolute top-0 left-0 w-8 h-8 border-4 border-blue-200 dark:border-blue-900 rounded-full"
@@ -75,6 +79,17 @@
             Nota: Este proceso reemplazará todos los datos actuales con los nuevos registros
             obtenidos.
           </p>
+
+          <!-- Información de última sincronización si existe -->
+          <div
+            v-if="syncStore.lastSyncTime"
+            class="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg"
+          >
+            <p class="text-sm">
+              <span class="font-medium">Última sincronización:</span>
+              {{ formattedLastSyncTime }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -91,25 +106,18 @@
       @confirm="confirmSync"
       @cancel="cancelSync"
     />
-
-    <!-- Toast de notificación -->
-    <ToastNotification
-      :show="showToast"
-      :message="toastMessage"
-      :type="toastType"
-      @close="closeToast"
-    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from 'vue'
+import { defineComponent, ref, reactive, onMounted, computed } from 'vue'
 import { syncFormConfig } from '@/config/syncConfig'
 import { syncStocks } from '@/api/services/stockService'
+import { useNotificationStore } from '@/stores/notificationStore'
+import { useSyncStore } from '@/stores/syncStore'
 import CustomForm from '@/components/molecules/CustomForm.vue'
 import AlertBanner from '@/components/atoms/AlertBanner.vue'
 import ConfirmationModal from '@/components/molecules/ConfirmationModal.vue'
-import ToastNotification from '@/components/atoms/ToastNotification.vue'
 import type { FormData } from '@/interfaces/BaseForm.interface'
 
 export default defineComponent({
@@ -118,9 +126,12 @@ export default defineComponent({
     CustomForm,
     AlertBanner,
     ConfirmationModal,
-    ToastNotification,
   },
   setup() {
+    // Stores
+    const notificationStore = useNotificationStore()
+    const syncStore = useSyncStore()
+
     // Estado del formulario
     const syncParams = reactive<{ limit?: number }>({
       limit: 1,
@@ -129,30 +140,47 @@ export default defineComponent({
     // Estados para UI
     const loading = ref(false)
     const showModal = ref(false)
-    const showToast = ref(false)
-    const toastMessage = ref('')
-    const toastType = ref<'success' | 'error' | 'warning' | 'info'>('info')
+
+    // Formatear la fecha de última sincronización
+    const formattedLastSyncTime = computed(() => {
+      if (!syncStore.lastSyncTime) return ''
+
+      try {
+        return new Date(syncStore.lastSyncTime).toLocaleString()
+      } catch (e) {
+        console.error('Error formateando fecha:', e)
+        return 'Fecha no disponible'
+      }
+    })
+
+    // Al montar el componente, verificar si hay una sincronización en curso
+    onMounted(() => {
+      // Si hay una sincronización marcada como en curso pero la página se recargó,
+      // resetear el estado para evitar que quede en estado inconsistente
+      if (syncStore.syncInProgress) {
+        syncStore.startSync() // Reseteamos el estado
+        syncStore.completeSync(false) // Marcamos como fallida
+        notificationStore.addNotification(
+          'La sincronización anterior no se completó correctamente. Por favor intente nuevamente.',
+          'warning',
+        )
+      }
+    })
 
     // Manejar envío del formulario (muestra el modal de confirmación)
     const handleSyncSubmit = (formData: FormData) => {
-      // Obtener y validar el limit
-      const limitValue = formData.limit as string | number | undefined
-
-      // Convertir a número si es un string
-      let limit: number | undefined = undefined
-
-      if (typeof limitValue === 'string' && limitValue.trim() !== '') {
-        limit = parseInt(limitValue, 10)
-      } else if (typeof limitValue === 'number') {
-        limit = limitValue
-      }
+      // Obtener y validar el limit - simplificado
+      const limitValue = formData.limit
+      const limit =
+        typeof limitValue === 'string'
+          ? parseInt(limitValue.trim(), 10)
+          : typeof limitValue === 'number'
+            ? limitValue
+            : undefined
 
       // Validar que sea un número válido
-      if (limit !== undefined && (isNaN(limit) || limit < 1)) {
-        // Mostrar mensaje de error
-        toastMessage.value = 'Por favor ingrese un número válido mayor a 0'
-        toastType.value = 'error'
-        showToast.value = true
+      if (!limit || isNaN(limit) || limit < 1) {
+        notificationStore.addNotification('Por favor ingrese un número válido mayor a 0', 'error')
         return
       }
 
@@ -168,26 +196,42 @@ export default defineComponent({
       // Cerrar modal
       showModal.value = false
 
-      // Activar estado de carga
+      // Activar estado de carga local y global
       loading.value = true
+      syncStore.startSync()
 
       try {
         // Llamar al servicio de sincronización
-        await syncStocks(syncParams.limit)
+        const response = await syncStocks(syncParams.limit)
 
-        // Mostrar toast de éxito
-        toastMessage.value = 'Actualización de datos completada exitosamente'
-        toastType.value = 'success'
-        showToast.value = true
+        // Actualizar el estado de sincronización como completado exitosamente
+        const success = syncStore.completeSync(true)
+
+        // Añadir notificación manualmente para evitar dependencia circular
+        if (success) {
+          notificationStore.addNotification(
+            'La sincronización se ha completado exitosamente. Por favor actualice la vista de datos.',
+            'success',
+          )
+        }
+
+        return response
       } catch (error) {
-        // Mostrar toast de error
-        toastMessage.value = 'Error al actualizar datos. Intente nuevamente más tarde.'
-        toastType.value = 'error'
-        showToast.value = true
+        // Determinar mensaje de error específico
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+
+        // Actualizar el estado de sincronización como fallido
+        syncStore.completeSync(false)
+
+        // Añadir notificación manualmente
+        notificationStore.addNotification(
+          `Error durante la sincronización: ${errorMessage}. Por favor intente nuevamente.`,
+          'error',
+        )
 
         console.error('Error en sincronización:', error)
       } finally {
-        // Desactivar estado de carga
+        // Desactivar estado de carga local
         loading.value = false
       }
     }
@@ -197,23 +241,17 @@ export default defineComponent({
       showModal.value = false
     }
 
-    // Cerrar toast
-    const closeToast = () => {
-      showToast.value = false
-    }
-
     return {
       syncFormConfig,
       syncParams,
       loading,
       showModal,
-      showToast,
-      toastMessage,
-      toastType,
+      notificationStore,
+      syncStore,
+      formattedLastSyncTime,
       handleSyncSubmit,
       confirmSync,
       cancelSync,
-      closeToast,
     }
   },
 })

@@ -4,7 +4,12 @@
       <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">{{
         $t('stockAdvisor')
       }}</span>
-      <div class="flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
+      <div class="flex items-center md:order-2 space-x-4 md:space-x-4 rtl:space-x-reverse">
+        <!-- Componente de notificaciones -->
+        <div class="pt-2">
+          <NotificationDropdown />
+        </div>
+
         <!-- Componente de idioma -->
         <LanguageSwitcher />
 
@@ -72,11 +77,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import LanguageSwitcher from '../molecules/LenguageSwitcher.vue'
+import NotificationDropdown from '../molecules/NotificationDropdown.vue'
 
 export default defineComponent({
   name: 'AppNavBar',
   components: {
     LanguageSwitcher,
+    NotificationDropdown,
   },
 })
 </script>

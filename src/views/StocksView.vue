@@ -74,30 +74,18 @@ export default defineComponent({
     })
 
     // Lógica para determinar cuándo mostrar recomendaciones
-    const shouldShowRecommendations = computed(() => {
-      // Solo mostrar recomendaciones si:
-      // 1. El filtro de recomendaciones está activo
-      // 2. Estamos en la primera página
-      // 3. No hay error de carga
-      // 4. Hay datos para mostrar
-      return (
+    const shouldShowRecommendations = computed(
+      () =>
         stockStore.filters.recommends === true &&
         stockStore.currentPage === 1 &&
         !stockStore.error &&
-        stockStore.hasResults
-      )
-    })
+        stockStore.hasResults,
+    )
 
     // Número de filas a destacar
-    const getHighlightedRowsCount = computed(() => {
-      // Si debemos mostrar recomendaciones y hay al menos 3 elementos
-      if (shouldShowRecommendations.value) {
-        // Destacar hasta 3 filas, o menos si no hay suficientes datos
-        return Math.min(3, stockStore.data.length)
-      }
-      // Si no se muestran recomendaciones, no destacar filas
-      return 0
-    })
+    const getHighlightedRowsCount = computed(() =>
+      shouldShowRecommendations.value ? Math.min(3, stockStore.data.length) : 0,
+    )
 
     // Configuración de la tabla con la paginación actualizada
     const tableConfig = computed(() => ({
@@ -109,24 +97,13 @@ export default defineComponent({
       },
     }))
 
-    // Manejadores de eventos de paginación
-    const handlePageChange = (page: number) => {
-      stockStore.setPage(page)
-    }
-
-    const handlePageSizeChange = (size: number) => {
-      stockStore.setPageSize(size)
-    }
-
-    // Manejar envío de formulario de filtros
-    const handleFilterSubmit = (formData: FormData) => {
+    // Manejadores de eventos
+    const handlePageChange = (page: number) => stockStore.setPage(page)
+    const handlePageSizeChange = (size: number) => stockStore.setPageSize(size)
+    const handleFilterSubmit = (formData: FormData) =>
       stockStore.updateFilters(formData as Partial<GetStocksParams>)
-    }
-
-    // Manejar reset de formulario
-    const handleFilterReset = (defaultData: FormData) => {
+    const handleFilterReset = (defaultData: FormData) =>
       stockStore.resetFilters(defaultData as Partial<GetStocksParams>)
-    }
 
     // Carga inicial de datos solo si no hay datos ya cargados
     onMounted(() => {

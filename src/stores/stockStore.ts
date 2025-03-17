@@ -1,30 +1,8 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
 import type { Stock } from '@/interfaces/Stock.interface'
 import type { GetStocksParams } from '@/api/services/stockService'
 import { getStocks } from '@/api/services/stockService'
-
-const STORAGE_KEY = 'stockFilters'
-
-// Función para guardar filtros en localStorage
-const saveFiltersToStorage = (filters: Partial<GetStocksParams>): void => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filters))
-  } catch (e) {
-    console.error('Error saving filters to storage:', e)
-  }
-}
-
-// Función para recuperar filtros de localStorage
-const getFiltersFromStorage = (): Partial<GetStocksParams> => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : {}
-  } catch (e) {
-    console.error('Error parsing stored filters:', e)
-    return {}
-  }
-}
+import type { PersistenceOptions } from 'pinia-plugin-persistedstate'
 
 // Valores por defecto para los filtros
 const DEFAULT_FILTERS: GetStocksParams = {
@@ -37,204 +15,128 @@ const DEFAULT_FILTERS: GetStocksParams = {
   size: 10,
 }
 
-export const useStockStore = defineStore('stock', () => {
-  // Recuperar filtros guardados
-  const savedFilters = getFiltersFromStorage()
+// Definición del tipo de estado del store
+interface StockState {
+  data: Stock[]
+  loading: boolean
+  error: string | null
+  total: number
+  filters: GetStocksParams
+}
 
-  // Estado
-  const data = ref<Stock[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-  const total = ref(0)
-  const page = ref(1)
-  const size = ref(10)
-  const filters = ref<GetStocksParams>({
-    ...DEFAULT_FILTERS,
-    ...savedFilters,
-  })
+// Sintaxis correcta: defineStore('id', options)
+export const useStockStore = defineStore('stock', {
+  state: (): StockState => ({
+    data: [],
+    loading: false,
+    error: null,
+    total: 0,
+    filters: { ...DEFAULT_FILTERS },
+  }),
 
-  // Getters
-  const totalPages = computed(() => {
-    return Math.ceil(total.value / size.value)
-  })
-
-  const hasResults = computed(() => {
-    return data.value.length > 0
-  })
-
-  const hasActiveFilters = computed(() => {
-    return (
-      (filters.value.query !== undefined && filters.value.query !== '') ||
-      filters.value.recommends === true ||
-      filters.value.minTargetTo !== undefined ||
-      filters.value.maxTargetTo !== undefined ||
-      (filters.value.currency !== undefined && filters.value.currency !== 'USD')
-    )
-  })
-
-  const currentPage = computed(() => page.value)
-  const itemsPerPage = computed(() => size.value)
-  const totalItems = computed(() => total.value)
-
-  // Normalizar valores de filtros para asegurar tipos correctos
-  function normalizeFilterValue(key: string, value: unknown): unknown {
-    // Para campos numéricos
-    if (['minTargetTo', 'maxTargetTo'].includes(key)) {
-      if (value === '' || value === null || value === undefined) {
-        return undefined
-      }
-
-      const numValue = typeof value === 'number' ? value : parseFloat(String(value))
-      return isNaN(numValue) ? undefined : numValue
-    }
-
-    // Para campos booleanos
-    if (key === 'recommends') {
-      return Boolean(value)
-    }
-
-    // El campo currency siempre debe tener un valor
-    if (key === 'currency') {
-      return value || 'USD'
-    }
-
-    // Para otros campos
-    return value
-  }
-
-  // Actualizar filtros
-  function updateFilters(newFilters: Partial<GetStocksParams>) {
-    // Si cambiamos filtros (no paginación), reseteamos a página 1
-    const isNonPaginationChange = Object.keys(newFilters).some(
-      (key) => key !== 'page' && key !== 'size',
-    )
-
-    if (isNonPaginationChange) {
-      filters.value.page = 1
-    }
-
-    // Normalizar los valores del filtro
-    const normalizedFilters = Object.entries(newFilters).reduce(
-      (acc, [key, value]) => {
-        acc[key] = normalizeFilterValue(key, value)
-        return acc
-      },
-      {} as Record<string, unknown>,
-    )
-
-    // Actualizamos los filtros
-    filters.value = {
-      ...filters.value,
-      ...normalizedFilters,
-    }
-
-    // Guardamos en localStorage para persistencia
-    saveFiltersToStorage(filters.value)
-
-    // Cargar datos automáticamente
-    fetchStocks()
-  }
-
-  // Resetear filtros
-  function resetFilters(defaultData?: Partial<GetStocksParams>) {
-    if (defaultData) {
-      // Normalizar los valores por defecto
-      const normalizedDefaults = Object.entries(defaultData).reduce(
-        (acc, [key, value]) => {
-          acc[key] = normalizeFilterValue(key, value)
-          return acc
-        },
-        {} as Record<string, unknown>,
+  getters: {
+    totalPages(state): number {
+      // Asegurar que size nunca sea undefined usando un valor por defecto
+      const size = state.filters.size || DEFAULT_FILTERS.size
+      return Math.ceil(state.total / size) || 1
+    },
+    hasResults(state): boolean {
+      return state.data.length > 0
+    },
+    currentPage(state): number {
+      // Asegurar que page nunca sea undefined
+      return state.filters.page || DEFAULT_FILTERS.page
+    },
+    itemsPerPage(state): number {
+      // Asegurar que size nunca sea undefined
+      return state.filters.size || DEFAULT_FILTERS.size
+    },
+    totalItems(state): number {
+      return state.total
+    },
+    hasActiveFilters(state): boolean {
+      return (
+        state.filters.query !== '' ||
+        state.filters.recommends === true ||
+        state.filters.minTargetTo !== undefined ||
+        state.filters.maxTargetTo !== undefined ||
+        state.filters.currency !== 'USD'
       )
+    },
+  },
 
-      // Mantener la configuración de paginación actual
-      filters.value = {
+  actions: {
+    async fetchStocks() {
+      this.loading = true
+      this.error = null
+
+      try {
+        // Filtrar valores undefined para la API
+        const activeFilters = Object.fromEntries(
+          Object.entries(this.filters).filter(([, value]) => value !== undefined),
+        ) as unknown as GetStocksParams
+
+        const response = await getStocks(activeFilters)
+
+        this.data = response.data.content
+        this.total = response.data.total
+
+        // Actualizar estado de paginación con lo que responde el servidor
+        // Asegurar que nunca se asigna undefined
+        this.filters.page = response.data.page || DEFAULT_FILTERS.page
+        this.filters.size = response.data.size || DEFAULT_FILTERS.size
+
+        return response
+      } catch (err) {
+        this.error = err instanceof Error ? err.message : 'Error desconocido'
+        console.error('Error al cargar stocks:', this.error)
+        return null
+      } finally {
+        this.loading = false
+      }
+    },
+
+    updateFilters(newFilters: Partial<GetStocksParams>) {
+      // Si cambiamos filtros (no paginación), reseteamos a página 1
+      if (Object.keys(newFilters).some((key) => key !== 'page' && key !== 'size')) {
+        this.filters.page = DEFAULT_FILTERS.page
+      }
+
+      // Actualizar los filtros directamente
+      this.filters = {
+        ...this.filters,
+        ...newFilters,
+      }
+
+      // Cargar datos automáticamente
+      this.fetchStocks()
+    },
+
+    resetFilters(defaultData?: Partial<GetStocksParams>) {
+      this.filters = {
         ...DEFAULT_FILTERS,
-        ...(normalizedDefaults as Partial<GetStocksParams>),
-        page: 1,
-        size: size.value,
-      }
-    } else {
-      // Reset completo a valores por defecto
-      filters.value = {
-        ...DEFAULT_FILTERS,
-        size: size.value,
-      }
-    }
-
-    // Eliminar filtros guardados
-    localStorage.removeItem(STORAGE_KEY)
-
-    // Cargar datos con filtros reseteados
-    fetchStocks()
-  }
-
-  // Cambiar página
-  function setPage(pageNum: number) {
-    updateFilters({ page: pageNum })
-  }
-
-  // Cambiar tamaño de página
-  function setPageSize(sizeNum: number) {
-    updateFilters({ size: sizeNum, page: 1 }) // Al cambiar el tamaño de página, volvemos a la primera
-  }
-
-  // Obtener datos de stocks
-  async function fetchStocks() {
-    loading.value = true
-    error.value = null
-
-    try {
-      // Filtrar valores undefined para la API
-      const activeFilters = Object.fromEntries(
-        Object.entries(filters.value).filter(([, value]) => value !== undefined),
-      ) as GetStocksParams
-
-      const response = await getStocks(activeFilters)
-
-      data.value = response.data.content
-      total.value = response.data.total
-      page.value = response.data.page
-      size.value = response.data.size
-
-      // Sincronizar página en caso de redirección
-      if (page.value !== filters.value.page) {
-        filters.value.page = page.value
-        saveFiltersToStorage(filters.value)
+        size: this.filters.size || DEFAULT_FILTERS.size, // Mantener el tamaño de página actual
+        ...defaultData, // Aplicar valores por defecto proporcionados
+        page: DEFAULT_FILTERS.page, // Siempre volver a la primera página
       }
 
-      return response
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error desconocido'
-      error.value = `Error al cargar los datos: ${errorMessage}`
-      console.error(error.value)
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
+      this.fetchStocks()
+    },
 
-  return {
-    // Estado
-    data,
-    loading,
-    error,
-    filters,
+    setPage(pageNum: number) {
+      this.filters.page = pageNum
+      this.fetchStocks()
+    },
 
-    // Getters
-    totalPages,
-    hasResults,
-    hasActiveFilters,
-    currentPage,
-    itemsPerPage,
-    totalItems,
+    setPageSize(sizeNum: number) {
+      this.filters.size = sizeNum
+      this.filters.page = DEFAULT_FILTERS.page
+      this.fetchStocks()
+    },
+  },
 
-    // Acciones
-    fetchStocks,
-    setPage,
-    setPageSize,
-    updateFilters,
-    resetFilters,
-    normalizeFilterValue,
-  }
+  persist: {
+    key: 'stock-filters',
+    paths: ['filters'],
+  } as PersistenceOptions<StockState>,
 })

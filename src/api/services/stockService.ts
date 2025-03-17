@@ -5,8 +5,8 @@ import type { ApiResponse } from '@/interfaces/Response.interface'
 export interface GetStocksParams {
   recommends?: boolean
   query?: string
-  page?: number
-  size?: number
+  page: number
+  size: number
   minTargetTo?: number
   maxTargetTo?: number
   currency?: string

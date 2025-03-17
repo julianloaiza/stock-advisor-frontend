@@ -1,15 +1,24 @@
 // src/stores/languageStore.ts
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-export const useLanguageStore = defineStore('language', {
-  state: () => ({
-    // Valor predeterminado 'EN' si no hay nada guardado
-    currentLanguage: localStorage.getItem('user-locale') || 'EN',
-  }),
+const STORAGE_KEY = 'user-locale'
 
-  actions: {
-    setLanguage(lang: string) {
-      this.currentLanguage = lang
-    },
-  },
+export const useLanguageStore = defineStore('language', () => {
+  // Estado
+  const currentLanguage = ref(localStorage.getItem(STORAGE_KEY) || 'EN')
+
+  // Acciones
+  function setLanguage(lang: string) {
+    currentLanguage.value = lang
+    localStorage.setItem(STORAGE_KEY, lang)
+  }
+
+  return {
+    // Estado
+    currentLanguage,
+
+    // Acciones
+    setLanguage,
+  }
 })
