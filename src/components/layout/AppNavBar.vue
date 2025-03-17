@@ -1,9 +1,12 @@
 <template>
   <nav class="bg-white border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-      <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">{{
-        $t('stockAdvisor')
-      }}</span>
+      <router-link to="/" class="cursor-pointer">
+        <span
+          class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white hover:text-blue-700 dark:hover:text-blue-500 transition-colors"
+          >{{ $t('stockAdvisor') }}</span
+        >
+      </router-link>
       <div class="flex items-center md:order-2 space-x-4 md:space-x-4 rtl:space-x-reverse">
         <!-- Componente de notificaciones -->
         <div class="pt-2">

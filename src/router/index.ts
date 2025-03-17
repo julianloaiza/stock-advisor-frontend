@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import StocksView from '../views/StocksView.vue'
 import SyncView from '../views/SyncView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -13,6 +14,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/sync',
     name: 'Sync',
     component: SyncView,
+  },
+  // 404 Page - Debe estar al final
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFoundView,
   },
 ]
 

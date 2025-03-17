@@ -10,6 +10,10 @@
           v-model="selectedItemsPerPage"
           @change="handleItemsPerPageChange"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2 pl-3 pr-4 text-left dark:bg-gray-700 dark:border-gray-600 dark:text-white appearance-none"
+          :class="{
+            'opacity-50 cursor-not-allowed': loading || paginationDisabled,
+            'cursor-pointer': !(loading || paginationDisabled),
+          }"
           :disabled="loading || paginationDisabled"
           style="padding-right: 1.5rem"
         >
