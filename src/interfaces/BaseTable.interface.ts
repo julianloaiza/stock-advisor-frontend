@@ -23,8 +23,6 @@ export interface TableConfig {
   title: string
   /** Lista de columnas a mostrar */
   columns: TableColumn[]
-  /** Estilo personalizado para el contenedor de la tabla */
-  style?: 'recommend'
   /** Configuración para la paginación (BasePaginator) */
   pagination?: PaginationConfig
 }

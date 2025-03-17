@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold dark:text-white">{{ config.title }}</h2>
+      <h2 class="text-2xl font-bold dark:text-white">{{ config.title }}</h2>
 
       <!-- Selector de elementos por página -->
       <div v-if="config.pagination && !loading" class="flex items-center space-x-2">
@@ -29,16 +29,13 @@
     <!-- Tabla de datos -->
     <div class="overflow-x-auto relative">
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead
-          class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400"
-        >
+        <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
             <th
               v-for="column in config.columns"
               :key="column.key"
               scope="col"
-              class="py-3 px-6"
-              :class="{ 'font-bold': column.highlight }"
+              class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-white uppercase tracking-wider"
             >
               {{ column.header }}
             </th>
@@ -49,19 +46,26 @@
             <tr
               v-for="(item, index) in data"
               :key="item.id || index"
-              class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
-              :class="{
-                'bg-blue-50 dark:bg-blue-900/20':
-                  index < highlightedRows && config.style === 'recommend',
-              }"
+              class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+              :class="getRowClasses(index)"
             >
               <td
-                v-for="column in config.columns"
+                v-for="(column, colIndex) in config.columns"
                 :key="`${item.id || index}-${column.key}`"
-                class="py-4 px-6"
-                :class="{ 'font-semibold': column.highlight }"
+                class="px-6 py-4"
+                :class="[
+                  { 'font-bold': column.highlight },
+                  colIndex === 0 && highlightRecommendations && index < 3
+                    ? 'flex items-center'
+                    : '',
+                ]"
               >
-                {{ formatCellValue(item[column.key], column.type) }}
+                <template v-if="colIndex === 0 && highlightRecommendations && index < 3">
+                  <span class="medal-icon mr-2">{{ getMedalIcon(index) }}</span>
+                </template>
+                <span :class="{ 'font-bold': column.highlight }">
+                  {{ formatCellValue(item[column.key], column.type) }}
+                </span>
               </td>
             </tr>
           </template>
@@ -106,9 +110,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed } from 'vue'
+import { defineComponent } from 'vue'
 import TablePagination from '@/components/molecules/CustomTable/TablePagination.vue'
 import type { TableConfig, TableItem } from '@/interfaces/BaseTable.interface'
+import { useCustomTable } from '@/composables/useCustomTable'
 
 export default defineComponent({
   name: 'CustomTable',
@@ -152,51 +157,22 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    highlightRecommendations: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['page-change', 'page-size-change'],
   setup(props, { emit }) {
-    // Estado local para la selección de elementos por página
-    const selectedItemsPerPage = ref(props.config.pagination?.itemsPerPage || 10)
-
-    // Opciones de tamaño de página con valor de respaldo
-    const pageSizeOptions = computed(
-      () => props.config.pagination?.pageSizeOptions || [10, 25, 50, 100],
-    )
-
-    // Actualizar el estado local cuando cambia la configuración
-    watch(
-      () => props.config.pagination?.itemsPerPage,
-      (newValue) => {
-        if (newValue) {
-          selectedItemsPerPage.value = newValue
-        }
-      },
-    )
-
-    // Manejadores de eventos
-    const handlePageChange = (page: number): void => {
-      emit('page-change', page)
-    }
-
-    const handleItemsPerPageChange = (): void => {
-      emit('page-size-change', selectedItemsPerPage.value)
-    }
-
-    // Formatear valores de las celdas según el tipo
-    const formatCellValue = (value: unknown, type?: string): string => {
-      if (value === null || value === undefined) {
-        return '-'
-      }
-
-      if (type === 'currency' && typeof value === 'number') {
-        return new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(value)
-      }
-
-      return String(value)
-    }
+    const {
+      selectedItemsPerPage,
+      pageSizeOptions,
+      handlePageChange,
+      handleItemsPerPageChange,
+      formatCellValue,
+      getRowClasses,
+      getMedalIcon,
+    } = useCustomTable(props, emit)
 
     return {
       selectedItemsPerPage,
@@ -204,7 +180,17 @@ export default defineComponent({
       handlePageChange,
       handleItemsPerPageChange,
       formatCellValue,
+      getRowClasses,
+      getMedalIcon,
     }
   },
 })
 </script>
+
+<style scoped>
+.medal-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.25rem;
+}
+</style>

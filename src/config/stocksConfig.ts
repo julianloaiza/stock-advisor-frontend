@@ -96,7 +96,6 @@ export const stocksTableConfig: TableConfig = {
       type: 'text',
     },
   ],
-  style: 'recommend',
   pagination: {
     currentPage: 1,
     itemsPerPage: 10,

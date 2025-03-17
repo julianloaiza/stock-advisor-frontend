@@ -11,7 +11,7 @@
           v-if="isMobile"
           :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
           :label="isCollapsed ? 'Mostrar' : 'Ocultar'"
-          variant="text"
+          variant="primary"
           @click="toggleCollapse"
           class="ml-4"
         />

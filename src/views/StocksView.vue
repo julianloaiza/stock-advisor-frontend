@@ -39,6 +39,7 @@
         :total-pages="totalPages"
         :total-items="totalItems"
         :highlighted-rows="highlightedRowsCount"
+        :highlight-recommendations="shouldShowRecommendations"
         :pagination-disabled="hasPendingDataUpdate"
         @page-change="handlePageChange"
         @page-size-change="handlePageSizeChange"
