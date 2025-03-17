@@ -1,4 +1,3 @@
-// src/composables/useSync.ts
 import { ref, reactive } from 'vue'
 import { syncStocks } from '@/api/services/stockService'
 import { useNotificationStore } from '@/stores/notificationStore'
@@ -18,18 +17,24 @@ export function useSync() {
   // Manejar el envío del formulario
   const handleSyncSubmit = (formData: { limit: number | string }) => {
     const limitValue = formData.limit
-    const limit = typeof limitValue === 'string' ? parseInt(limitValue.trim(), 10) : limitValue
 
-    // Validar que sea un número válido
-    if (!limit || isNaN(limit) || limit < 1) {
-      notificationStore.addNotification('Por favor ingrese un número válido mayor a 0', 'error')
-      return
+    let limit: number
+    if (typeof limitValue === 'string') {
+      const trimmed = limitValue.trim()
+      // Si está vacío, se asume que la validación "required" lo gestionará
+      if (trimmed === '') return
+      limit = parseInt(trimmed, 10)
+    } else {
+      limit = limitValue
     }
 
-    // Guardar el valor para usarlo en la confirmación
+    // Si el número es inválido o menor a 1, se fuerza a 1
+    if (isNaN(limit) || limit < 1) {
+      limit = 1
+    }
     syncParams.limit = limit
 
-    // Mostrar modal de confirmación
+    // Mostrar el modal de confirmación
     showModal.value = true
   }
 
@@ -40,32 +45,23 @@ export function useSync() {
     syncStore.startSync()
 
     try {
-      // Llamar al servicio de sincronización
+      // Llamar al servicio de sincronización con el límite determinado
       const response = await syncStocks(syncParams.limit)
 
-      // Marcar como exitoso
+      // Marcar como exitoso y agregar notificación de éxito
       syncStore.completeSync(true)
-
-      // Añadir notificación
       notificationStore.addNotification(
         'La sincronización se ha completado exitosamente. Los datos están listos para ser visualizados.',
         'success',
       )
-
       return response
     } catch (error) {
-      // Determinar mensaje de error
       const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-
-      // Marcar como fallido
       syncStore.completeSync(false)
-
-      // Añadir notificación de error
       notificationStore.addNotification(
         `Error durante la sincronización: ${errorMessage}. Por favor intente nuevamente.`,
         'error',
       )
-
       console.error('Error en sincronización:', error)
     } finally {
       loading.value = false
