@@ -1,15 +1,20 @@
 import { ref, computed, watch } from 'vue'
-import type { TableConfig } from '@/interfaces/BaseTable.interface'
+import type { TableConfig, TableItem } from '@/interfaces/BaseTable.interface'
 
 type CustomTableEmit = {
   (event: 'page-change', page: number): void
   (event: 'page-size-change', itemsPerPage: number): void
 }
 
-export function useCustomTable(
-  props: { config: TableConfig; highlightRecommendations: boolean },
-  emit: CustomTableEmit,
-) {
+type CustomTableProps = {
+  config: TableConfig
+  highlightRecommendations: boolean
+  loading: boolean
+  error: string
+  data: TableItem[]
+}
+
+export function useCustomTable(props: CustomTableProps, emit: CustomTableEmit) {
   // Estado local para la selección de elementos por página
   const selectedItemsPerPage = ref(props.config.pagination?.itemsPerPage || 10)
 
@@ -85,6 +90,14 @@ export function useCustomTable(
     }
   }
 
+  // Función para determinar el tipo de estado de la tabla
+  const getTableStateType = computed(() => {
+    if (props.loading) return 'loading'
+    if (props.error) return 'error'
+    if (props.data.length === 0) return 'empty'
+    return null
+  })
+
   return {
     selectedItemsPerPage,
     pageSizeOptions,
@@ -93,5 +106,6 @@ export function useCustomTable(
     formatCellValue,
     getRowClasses,
     getMedalIcon,
+    getTableStateType,
   }
 }

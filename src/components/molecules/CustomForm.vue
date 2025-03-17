@@ -46,9 +46,16 @@
       </div>
 
       <!-- Buttons container -->
-      <div class="buttons-container">
+      <div
+        class="buttons-container flex flex-col md:flex-row md:items-center justify-center md:justify-start gap-2 md:gap-4"
+      >
         <!-- Submit button -->
-        <BaseButton :label="config.actionLabel" type="submit" :disabled="disabled" />
+        <BaseButton
+          :label="config.actionLabel"
+          type="submit"
+          :disabled="disabled"
+          class="w-full md:w-28"
+        />
 
         <!-- Reset button (only shown if clearLabel is explicitly provided) -->
         <BaseButton
@@ -58,7 +65,7 @@
           type="button"
           @click="resetForm"
           :disabled="disabled"
-          class="mt-2 md:mt-0 md:ml-2"
+          class="w-full md:w-28"
         />
       </div>
     </div>

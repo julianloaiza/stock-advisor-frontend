@@ -46,7 +46,7 @@
           </tr>
         </thead>
         <tbody>
-          <template v-if="!loading && !error && data.length > 0">
+          <template v-if="!getTableStateType">
             <tr
               v-for="(item, index) in data"
               :key="item.id || index"
@@ -73,26 +73,14 @@
               </td>
             </tr>
           </template>
-          <tr v-else-if="loading">
-            <td :colspan="config.columns.length" class="py-10 text-center">
-              <div class="flex justify-center items-center">
-                <div
-                  class="w-6 h-6 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600"
-                ></div>
-                <span class="ml-2">Cargando...</span>
-              </div>
-            </td>
-          </tr>
-          <tr v-else-if="error">
-            <td :colspan="config.columns.length" class="py-10 text-center">
-              <div class="text-red-500">{{ error }}</div>
-            </td>
-          </tr>
-          <tr v-else>
-            <td :colspan="config.columns.length" class="py-10 text-center">
-              No hay datos disponibles
-            </td>
-          </tr>
+
+          <!-- Estado de la Tabla -->
+          <TableState
+            v-else
+            :type="getTableStateType"
+            :columns-count="config.columns.length"
+            :message="error"
+          />
         </tbody>
       </table>
     </div>
@@ -116,6 +104,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import TablePagination from '@/components/molecules/CustomTable/TablePagination.vue'
+import TableState from '@/components/molecules/CustomTable/TableState.vue'
 import type { TableConfig, TableItem } from '@/interfaces/BaseTable.interface'
 import { useCustomTable } from '@/composables/useCustomTable'
 
@@ -123,6 +112,7 @@ export default defineComponent({
   name: 'CustomTable',
   components: {
     TablePagination,
+    TableState,
   },
   props: {
     config: {
@@ -176,6 +166,7 @@ export default defineComponent({
       formatCellValue,
       getRowClasses,
       getMedalIcon,
+      getTableStateType,
     } = useCustomTable(props, emit)
 
     return {
@@ -186,6 +177,7 @@ export default defineComponent({
       formatCellValue,
       getRowClasses,
       getMedalIcon,
+      getTableStateType,
     }
   },
 })

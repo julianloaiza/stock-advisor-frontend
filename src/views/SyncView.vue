@@ -14,26 +14,29 @@
 
       <!-- Formulario de sincronización y última actualización -->
       <div class="mt-6">
-        <div class="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg">
+        <div class="bg-gray-50 dark:bg-gray-700/50 p-4 md:p-6 rounded-lg">
           <div class="text-gray-700 dark:text-gray-300 mb-4">
             Por favor, ingrese el número de consultas que desea ejecutar. Cada consulta actualizará
             10 registros de acciones bursátiles en nuestra base de datos.
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Columna izquierda: Formulario -->
-            <div class="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm">
+          <div class="grid grid-cols-1 md:grid-cols-10 gap-4 md:gap-6 items-center">
+            <!-- Contenedor del formulario con flex para centrado -->
+            <div
+              class="md:col-span-6 bg-white dark:bg-gray-700 p-4 md:p-5 rounded-lg shadow-sm flex items-center min-h-[120px]"
+            >
               <CustomForm
                 ref="syncFormRef"
                 :config="syncFormConfig"
                 @search="handleSyncSubmit"
                 :disabled="loading || syncStore.syncInProgress"
+                class="w-full"
               />
             </div>
 
-            <!-- Columna derecha: Estado de sincronización -->
+            <!-- Contenedor de la última sincronización -->
             <div
-              class="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm flex items-center justify-center"
+              class="md:col-span-4 bg-white dark:bg-gray-700 p-4 md:p-5 rounded-lg shadow-sm flex items-center justify-center min-h-[120px]"
             >
               <div v-if="loading || syncStore.syncInProgress" class="flex flex-col items-center">
                 <LoadingIndicator size="lg" color="primary" label="Sincronizando datos..." />
