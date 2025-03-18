@@ -1,16 +1,28 @@
-// src/stores/syncStore.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+/**
+ * Clave de almacenamiento local para el estado de sincronización
+ */
 const STORAGE_KEY = 'stock-advisor-sync-state'
 
+/**
+ * Store de gestión de sincronización para Stock Advisor
+ *
+ * Responsabilidades:
+ * - Controlar el estado de sincronización
+ * - Gestionar la marca de última actualización
+ * - Persistir el estado de sincronización
+ */
 export const useSyncStore = defineStore('sync', () => {
-  // Estado
-  const syncInProgress = ref(false)
-  const dataUpdated = ref(false)
-  const lastSyncTime = ref<number | null>(null)
+  // Estado reactivo
+  const syncInProgress = ref(false) // Indica si hay una sincronización en curso
+  const dataUpdated = ref(false) // Marca si los datos han sido actualizados
+  const lastSyncTime = ref<number | null>(null) // Marca de tiempo de la última sincronización
 
-  // Cargar estado guardado
+  /**
+   * Recupera el estado de sincronización guardado en localStorage
+   */
   const loadStoredState = () => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
@@ -24,7 +36,9 @@ export const useSyncStore = defineStore('sync', () => {
     }
   }
 
-  // Persistir estado
+  /**
+   * Guarda el estado de sincronización en localStorage
+   */
   const persistState = () => {
     try {
       localStorage.setItem(
@@ -42,18 +56,28 @@ export const useSyncStore = defineStore('sync', () => {
   // Cargar estado al inicializar
   loadStoredState()
 
-  // Getters
+  /**
+   * Getter computado para obtener el estado de sincronización
+   */
   const syncData = computed(() => ({
     dataUpdated: dataUpdated.value,
     lastSyncTime: lastSyncTime.value,
     syncInProgress: syncInProgress.value,
   }))
 
-  // Acciones
+  /**
+   * Inicia el proceso de sincronización
+   */
   function startSync() {
     syncInProgress.value = true
   }
 
+  /**
+   * Completa el proceso de sincronización
+   *
+   * @param success - Indica si la sincronización fue exitosa
+   * @returns Resultado de la sincronización
+   */
   function completeSync(success: boolean) {
     syncInProgress.value = false
 
@@ -66,11 +90,19 @@ export const useSyncStore = defineStore('sync', () => {
     return success
   }
 
+  /**
+   * Marca los datos como revisados
+   */
   function markDataChecked() {
     dataUpdated.value = false
     persistState()
   }
 
+  /**
+   * Recupera de una sincronización incompleta
+   *
+   * @returns Si había una sincronización en progreso
+   */
   function recoverFromIncompleteSync() {
     if (syncInProgress.value) {
       syncInProgress.value = false

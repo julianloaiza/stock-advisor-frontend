@@ -82,6 +82,10 @@ import { defineComponent } from 'vue'
 import LanguageSwitcher from '../molecules/LenguageSwitcher.vue'
 import NotificationDropdown from '../molecules/NotificationDropdown.vue'
 
+/**
+ * Barra de navegación principal con menú responsive, selector de idioma
+ * y centro de notificaciones
+ */
 export default defineComponent({
   name: 'AppNavBar',
   components: {

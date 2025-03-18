@@ -29,6 +29,10 @@
 import { defineComponent } from 'vue'
 import ErrorMessage from './ErrorMessage.vue'
 
+/**
+ * Interruptor tipo toggle con soporte para tema oscuro
+ * Compatible con v-model para control de estado binario
+ */
 export default defineComponent({
   name: 'BaseSwitch',
   components: {

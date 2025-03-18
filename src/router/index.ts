@@ -4,6 +4,10 @@ import StocksView from '../views/StocksView.vue'
 import SyncView from '../views/SyncView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 
+/**
+ * Definición de rutas para la aplicación Stock Advisor
+ * Incluye vistas principales y manejo de rutas no encontradas
+ */
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
@@ -15,7 +19,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Sync',
     component: SyncView,
   },
-  // 404 Page - Debe estar al final
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
@@ -23,6 +26,10 @@ const routes: Array<RouteRecordRaw> = [
   },
 ]
 
+/**
+ * Configuración del enrutador de la aplicación
+ * Utiliza history mode para URLs limpias y sin hash
+ */
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,

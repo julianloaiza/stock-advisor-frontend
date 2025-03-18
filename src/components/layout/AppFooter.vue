@@ -23,3 +23,15 @@
     </div>
   </footer>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+/**
+ * Pie de página de la aplicación con copyright, atribución al autor
+ * y enlace al repositorio de GitHub
+ */
+export default defineComponent({
+  name: 'AppFooter',
+})
+</script>

@@ -1,11 +1,21 @@
 import { reactive, watch } from 'vue'
 import type { FormConfig, Field, FormValue } from '@/interfaces/BaseForm.interface'
 
+/**
+ * Tipo de evento de emisión para el formulario personalizado
+ */
 type EmitEvent = {
   (event: 'search', payload: Record<string, unknown>): void
   (event: 'reset', payload: Record<string, unknown>): void
 }
 
+/**
+ * Hook para gestionar formularios dinámicos con validación y estado
+ *
+ * @param props - Configuración del formulario, valores iniciales y estado de deshabilitación
+ * @param emit - Función para emitir eventos del formulario
+ * @returns Objeto con datos del formulario, métodos de validación y reseteo
+ */
 export function useCustomForm(
   props: {
     config: FormConfig
@@ -14,13 +24,17 @@ export function useCustomForm(
   },
   emit: EmitEvent,
 ) {
-  // Mensaje de error por defecto
+  // Mensaje de error por defecto para campos requeridos
   const defaultErrorMessage = 't_components_errorMessage_required'
 
-  // Objeto para rastrear qué campos tienen errores
+  // Objeto reactivo para rastrear errores de campos
   const fieldErrors = reactive<Record<string, boolean>>({})
 
-  // Obtener valor vacío según el tipo de campo
+  /**
+   * Obtiene un valor vacío predeterminado según el tipo de campo
+   * @param field - Configuración del campo de formulario
+   * @returns Valor vacío o predeterminado para el campo
+   */
   function getEmptyValue(field: Field): FormValue {
     if (field.type === 'switch') return false
     if (field.type === 'dropdown' && field.options && field.options.length > 0) {
@@ -29,12 +43,11 @@ export function useCustomForm(
     return ''
   }
 
-  // Inicializar datos del formulario - corregido para manejar los tipos correctamente
+  // Datos reactivos del formulario
   const formData = reactive<Record<string, FormValue>>({})
 
-  // Llenar formData con valores iniciales
+  // Inicializar datos del formulario con valores por defecto o iniciales
   props.config.fields.forEach((field) => {
-    // Usar valor inicial si está disponible, sino usar valor por defecto o vacío
     formData[field.name] =
       props.initialValues[field.name] !== undefined
         ? (props.initialValues[field.name] as FormValue)
@@ -60,11 +73,14 @@ export function useCustomForm(
     { deep: true },
   )
 
-  // Validación simple - solo verificar si los campos requeridos tienen valores
+  /**
+   * Validar formulario verificando campos requeridos
+   * @returns Booleano indicando si el formulario es válido
+   */
   function validateForm(): boolean {
     let isValid = true
 
-    // Reiniciar todos los errores primero
+    // Reiniciar todos los errores
     Object.keys(fieldErrors).forEach((key) => (fieldErrors[key] = false))
 
     // Verificar campos requeridos
@@ -75,7 +91,7 @@ export function useCustomForm(
           formData[field.name] === undefined ||
           formData[field.name] === null
 
-        // Para switches, considerar false como vacío
+        // Manejar caso especial para switches
         const isEmptySwitch = field.type === 'switch' && formData[field.name] === false
 
         if (isEmpty || isEmptySwitch) {
@@ -88,7 +104,10 @@ export function useCustomForm(
     return isValid
   }
 
-  // Enviar formulario si es válido
+  /**
+   * Validar y enviar formulario si es válido
+   * Emite evento 'search' con los datos del formulario
+   */
   function validateAndSubmit() {
     if (props.disabled) return
 
@@ -96,7 +115,7 @@ export function useCustomForm(
 
     const result: Record<string, unknown> = {}
 
-    // Copiar los valores a un nuevo objeto
+    // Copiar valores a un nuevo objeto
     Object.keys(formData).forEach((key) => {
       result[key] = formData[key]
     })
@@ -104,7 +123,10 @@ export function useCustomForm(
     emit('search', result)
   }
 
-  // Resetear formulario a valores por defecto
+  /**
+   * Resetear formulario a valores por defecto
+   * Emite evento 'reset' con los valores reseteados
+   */
   function resetForm() {
     if (props.disabled) return
 
@@ -118,7 +140,7 @@ export function useCustomForm(
 
     const result: Record<string, unknown> = {}
 
-    // Copiar los valores a un nuevo objeto
+    // Copiar valores a un nuevo objeto
     Object.keys(formData).forEach((key) => {
       result[key] = formData[key]
     })

@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto p-4">
-    <!-- Panel de filtros -->
+    <!-- Panel de filtros para búsqueda de stocks -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
       <CustomFilter
         :title="'t_stocks_filter_title'"
@@ -11,7 +11,7 @@
       />
     </div>
 
-    <!-- Panel de resultados -->
+    <!-- Panel de resultados de stocks -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 px-5 sm:px-10 py-5">
       <!-- Banner de recomendaciones -->
       <AlertBanner
@@ -20,7 +20,7 @@
         icon="💡"
       />
 
-      <!-- Banner de datos actualizados -->
+      <!-- Banner de actualización de datos -->
       <AlertBanner
         :show="hasPendingDataUpdate"
         :message="'t_stocks_data_update_banner'"
@@ -28,6 +28,7 @@
         type="info"
       />
 
+      <!-- Tabla de stocks con configuración dinámica -->
       <CustomTable
         :config="tableConfig"
         :data="stockData"
@@ -54,6 +55,15 @@ import CustomFilter from '@/components/organisms/CustomFilter.vue'
 import CustomTable from '@/components/organisms/CustomTable.vue'
 import AlertBanner from '@/components/atoms/AlertBanner.vue'
 
+/**
+ * Vista principal de stocks/inversiones
+ *
+ * Componente que gestiona:
+ * - Filtrado de stocks
+ * - Visualización de tabla de inversiones
+ * - Manejo de paginación
+ * - Banners de recomendaciones y actualizaciones
+ */
 export default defineComponent({
   name: 'StocksView',
   components: {
@@ -62,6 +72,7 @@ export default defineComponent({
     AlertBanner,
   },
   setup() {
+    // Utilizar composable para gestionar la lógica de stocks
     const {
       stockData,
       stockLoading,
@@ -81,7 +92,7 @@ export default defineComponent({
       loadInitialData,
     } = useStocks()
 
-    // Carga inicial de datos
+    // Cargar datos iniciales al montar el componente
     onMounted(loadInitialData)
 
     return {

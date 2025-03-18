@@ -81,6 +81,10 @@ import type { PropType } from 'vue'
 import type { FieldInputType } from '@/interfaces/BaseForm.interface'
 import ErrorMessage from './ErrorMessage.vue'
 
+/**
+ * Campo de entrada con iconos contextuales según su tipo
+ * Soporta búsqueda, números y valores monetarios
+ */
 export default defineComponent({
   name: 'BaseInput',
   components: {

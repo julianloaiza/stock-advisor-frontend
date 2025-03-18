@@ -59,6 +59,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+/**
+ * Componente que muestra diferentes estados de una tabla (carga, error, vacío)
+ * Se usa como fila dentro de una tabla para mantener la estructura
+ */
 export default defineComponent({
   name: 'TableState',
   props: {

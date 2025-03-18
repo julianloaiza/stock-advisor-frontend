@@ -71,6 +71,10 @@ import { defineComponent, computed } from 'vue'
 import type { Notification } from '@/stores/notificationStore'
 import { formatRelativeTime } from '@/utils/formatterUtils'
 
+/**
+ * Componente para mostrar notificaciones individuales con diferentes
+ * estilos según su tipo (success, error, warning, info)
+ */
 export default defineComponent({
   name: 'NotificationItem',
   props: {
@@ -81,7 +85,9 @@ export default defineComponent({
   },
   emits: ['remove'],
   setup(props) {
-    // Obtener clase CSS para el ícono según el tipo de notificación
+    /**
+     * Determina la clase CSS para el icono según el tipo de notificación
+     */
     const getIconClass = computed((): string => {
       switch (props.notification.type) {
         case 'success':

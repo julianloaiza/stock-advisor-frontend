@@ -82,6 +82,10 @@ import BaseButton from '../atoms/BaseButton.vue'
 import type { FormConfig } from '@/interfaces/BaseForm.interface'
 import { useCustomForm } from '@/composables/useCustomForm'
 
+/**
+ * Formulario dinámico y configurable que soporta diferentes tipos de campos
+ * Usa un objeto de configuración para definir estructura y comportamiento
+ */
 export default defineComponent({
   name: 'CustomForm',
   components: {

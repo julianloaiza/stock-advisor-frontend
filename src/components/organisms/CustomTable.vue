@@ -108,6 +108,10 @@ import TableState from '@/components/molecules/CustomTable/TableState.vue'
 import type { TableConfig, TableItem } from '@/interfaces/BaseTable.interface'
 import { useCustomTable } from '@/composables/useCustomTable'
 
+/**
+ * Tabla avanzada con soporte para paginación, formateo de celdas,
+ * distintos estados (carga, error, vacío) y destacado de filas
+ */
 export default defineComponent({
   name: 'CustomTable',
   components: {
@@ -151,6 +155,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    /**
+     * Cuando es true, muestra iconos de medalla para las primeras 3 filas,
+     * usado para destacar recomendaciones prioritarias
+     */
     highlightRecommendations: {
       type: Boolean,
       default: false,

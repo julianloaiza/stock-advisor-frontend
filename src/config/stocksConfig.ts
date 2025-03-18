@@ -1,7 +1,11 @@
 import type { FormConfig } from '@/interfaces/BaseForm.interface'
 import type { TableConfig } from '@/interfaces/BaseTable.interface'
 
-// Configuración del formulario de filtros de stocks
+/**
+ * Configuración del formulario de filtros para la vista de inversiones
+ *
+ * Define los campos, tipos, valores por defecto y etiquetas para el formulario de filtrado de acciones
+ */
 export const stocksFormConfig: FormConfig = {
   fields: [
     {
@@ -43,7 +47,11 @@ export const stocksFormConfig: FormConfig = {
   clearLabel: 't_stocks_form_clear_label',
 }
 
-// Configuración de la tabla de stocks
+/**
+ * Configuración de la tabla de inversiones
+ *
+ * Define las columnas, tipos de datos y configuración de paginación para la tabla de acciones
+ */
 export const stocksTableConfig: TableConfig = {
   title: 't_stocks_table_title',
   columns: [

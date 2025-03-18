@@ -14,6 +14,9 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 
+/**
+ * Banner informativo con soporte para diferentes tipos de alertas y temas claro/oscuro
+ */
 export default defineComponent({
   name: 'AlertBanner',
   props: {
@@ -36,7 +39,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    // Clases según el tipo de alerta (manteniendo el estilo original como base)
     const typeClass = computed(() => {
       switch (props.type) {
         case 'success':
@@ -51,7 +53,6 @@ export default defineComponent({
       }
     })
 
-    // Clases para el texto según el tipo de alerta
     const textClass = computed(() => {
       switch (props.type) {
         case 'success':

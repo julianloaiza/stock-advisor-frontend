@@ -55,6 +55,10 @@ import { defineComponent, ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import type { PropType } from 'vue'
 import ErrorMessage from './ErrorMessage.vue'
 
+/**
+ * Selector desplegable con soporte para opciones personalizadas,
+ * gestión de errores y compatibilidad con v-model
+ */
 export default defineComponent({
   name: 'BaseDropdown',
   components: {
@@ -109,6 +113,9 @@ export default defineComponent({
       isOpen.value = false
     }
 
+    /**
+     * Cierra el menú desplegable cuando se hace clic fuera del componente
+     */
     const handleClickOutside = (e: MouseEvent) => {
       const element = document.getElementById(props.id)
       if (element && !element.contains(e.target as Node)) {

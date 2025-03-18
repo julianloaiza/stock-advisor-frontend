@@ -88,6 +88,10 @@
 import { defineComponent } from 'vue'
 import BaseButton from '../atoms/BaseButton.vue'
 
+/**
+ * Modal de confirmación para acciones críticas o que requieren aprobación del usuario
+ * Soporta diferentes iconos (warning, question) y personalización de botones
+ */
 export default defineComponent({
   name: 'ConfirmationModal',
   components: {

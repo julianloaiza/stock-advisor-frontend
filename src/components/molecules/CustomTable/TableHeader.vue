@@ -19,6 +19,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+/**
+ * Encabezado para tablas que incluye título y selector para número de entradas por página
+ */
 export default defineComponent({
   name: 'TableHeader',
   props: {
@@ -37,7 +40,6 @@ export default defineComponent({
   },
   emits: ['update:page-size'],
   setup(props, { emit }) {
-    // Manejar cambio de tamaño de página con seguridad de tipo
     const handlePageSizeChange = (event: Event) => {
       const target = event.target as HTMLSelectElement
       if (target && target.value) {

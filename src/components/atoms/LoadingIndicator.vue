@@ -24,17 +24,20 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+/**
+ * Indicador de carga animado con opciones configurables de tamaño y color
+ */
 export default defineComponent({
   name: 'LoadingIndicator',
   props: {
     size: {
       type: String,
-      default: 'md', // 'sm', 'md', 'lg'
+      default: 'md',
       validator: (value: string) => ['sm', 'md', 'lg'].includes(value),
     },
     color: {
       type: String,
-      default: 'primary', // 'primary', 'secondary', 'gray'
+      default: 'primary',
       validator: (value: string) => ['primary', 'secondary', 'gray'].includes(value),
     },
     label: {
@@ -47,21 +50,18 @@ export default defineComponent({
     },
   },
   setup(props) {
-    // Definir el tamaño del spinner
     const spinnerSizes = {
       sm: 'h-4 w-4',
       md: 'h-6 w-6',
       lg: 'h-8 w-8',
     }
 
-    // Definir los colores
     const spinnerColors = {
       primary: 'text-blue-600',
       secondary: 'text-purple-600',
       gray: 'text-gray-600',
     }
 
-    // Calcular clases del spinner
     const spinnerClass = `${spinnerSizes[props.size as keyof typeof spinnerSizes]} ${spinnerColors[props.color as keyof typeof spinnerColors]}`
 
     return {

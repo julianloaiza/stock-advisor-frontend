@@ -11,6 +11,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+/**
+ * Mensaje de error para validaciones de formularios
+ * Posicionado absolutamente debajo del campo relacionado
+ */
 export default defineComponent({
   name: 'ErrorMessage',
   props: {

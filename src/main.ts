@@ -6,11 +6,25 @@ import router from './router'
 import { i18n } from './i18n/index'
 import './assets/styles/main.css'
 
+/**
+ * Configuración principal de la aplicación Stock Advisor
+ *
+ * Inicializa y configura:
+ * - Pinia para gestión de estado
+ * - Persistencia de estado
+ * - Enrutamiento
+ * - Internacionalización
+ * - Estilos globales
+ */
+// Crear instancia de Pinia con plugin de persistencia
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
+// Crear aplicación Vue
 const app = createApp(App)
-app.use(pinia)
-app.use(router)
-app.use(i18n)
-app.mount('#app')
+
+// Configurar plugins y montar aplicación
+app.use(pinia) // Gestión de estado
+app.use(router) // Enrutamiento
+app.use(i18n) // Internacionalización
+app.mount('#app') // Montar en el elemento con ID 'app'

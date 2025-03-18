@@ -17,7 +17,6 @@
         </p>
       </div>
 
-      <!-- Slot para contenido adicional -->
       <slot></slot>
     </div>
   </div>
@@ -26,6 +25,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+/**
+ * Panel informativo con soporte para título, lista de elementos y nota adicional
+ * Incluye un slot para contenido personalizado
+ */
 export default defineComponent({
   name: 'InfoPanel',
   props: {

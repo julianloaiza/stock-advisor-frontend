@@ -109,6 +109,11 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 
+/**
+ * Componente de paginación para tablas con diseño responsive
+ * Muestra navegación numérica en pantallas medianas y grandes,
+ * y simplifica la interfaz en dispositivos móviles
+ */
 export default defineComponent({
   name: 'TablePagination',
   props: {
@@ -143,10 +148,12 @@ export default defineComponent({
   },
   emits: ['page-change'],
   setup(props) {
-    // Deshabilitar paginación cuando está cargando, no hay resultados, o está explícitamente deshabilitado
     const isDisabled = computed(() => props.loading || !props.hasResults || props.disabled)
 
-    // Calcular el rango de páginas a mostrar
+    /**
+     * Calcula el rango de números de página a mostrar,
+     * limitando a 5 páginas visibles con la página actual centrada cuando es posible
+     */
     const paginationRange = computed(() => {
       const maxVisiblePages = 5
       let startPage = Math.max(1, props.currentPage - Math.floor(maxVisiblePages / 2))
@@ -157,7 +164,6 @@ export default defineComponent({
         startPage = Math.max(1, endPage - maxVisiblePages + 1)
       }
 
-      // Crear un array con el rango de páginas
       return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i)
     })
 

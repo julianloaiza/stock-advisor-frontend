@@ -13,6 +13,10 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
 
+/**
+ * Botón base con múltiples variantes y tamaños
+ * Soporta: primary, secondary, outline, icon y link
+ */
 export default defineComponent({
   name: 'BaseButton',
   props: {
@@ -44,21 +48,17 @@ export default defineComponent({
   emits: ['click'],
   setup(props) {
     const getButtonClasses = computed(() => {
-      // Tamaños
       const sizeClasses = {
         sm: 'text-xs px-3 py-1.5',
         md: 'text-sm px-5 py-2.5',
         lg: 'text-base px-6 py-3',
       }
 
-      // Clases base comunes
       const baseClasses =
         'font-medium rounded-lg text-center focus:outline-none focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
 
-      // Obtener la clase de tamaño correspondiente
       const sizeClass = sizeClasses[props.size] || sizeClasses.md
 
-      // Para variantes específicas
       switch (props.variant) {
         case 'primary':
           return `${baseClasses} ${sizeClass} text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800`

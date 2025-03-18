@@ -142,6 +142,10 @@ import { defineComponent, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useLanguageStore } from '@/stores/languageStore'
 
+/**
+ * Selector de idioma que permite cambiar entre inglés y español
+ * Almacena preferencia en localStorage para persistencia entre sesiones
+ */
 export default defineComponent({
   name: 'LanguageSwitcher',
   setup() {
@@ -151,25 +155,21 @@ export default defineComponent({
     // Usar el valor del store para mantener el estado
     const currentLocale = computed(() => languageStore.currentLanguage)
 
-    // Inicializar el idioma al montar el componente
+    /**
+     * Inicializa el idioma desde localStorage o usa el predeterminado (EN)
+     */
     onMounted(() => {
-      // Obtener idioma guardado o usar el predeterminado (EN)
       const savedLanguage = localStorage.getItem('user-locale') || 'EN'
-
-      // Inicializar tanto el store como la configuración i18n
       languageStore.setLanguage(savedLanguage)
       locale.value = savedLanguage
     })
 
-    // Cambiar idioma
+    /**
+     * Cambia el idioma de la aplicación y persiste la selección
+     */
     const changeLanguage = (lang: string) => {
-      // Actualizar el store
       languageStore.setLanguage(lang)
-
-      // Actualizar i18n
       locale.value = lang
-
-      // Guardar en localStorage para persistencia
       localStorage.setItem('user-locale', lang)
     }
 

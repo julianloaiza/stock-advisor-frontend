@@ -38,6 +38,10 @@ import CustomForm from '@/components/molecules/CustomForm.vue'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import type { FormConfig, FormData } from '@/interfaces/BaseForm.interface'
 
+/**
+ * Componente de filtro adaptativo que se colapsa en dispositivos móviles
+ * y permanece expandido en dispositivos de escritorio
+ */
 export default defineComponent({
   name: 'CustomFilter',
   components: {
@@ -60,13 +64,14 @@ export default defineComponent({
   },
   emits: ['filter-applied', 'filter-reset'],
   setup(props, { emit }) {
-    // Estado para detectar si estamos en móvil
     const isMobile = ref(false)
-
-    // Estado de colapso - en móvil inicia colapsado, en desktop inicia expandido
     const isCollapsed = ref(false)
+    let initialCheck = true
 
-    // Verificar el tamaño de la pantalla
+    /**
+     * Verifica si el dispositivo es móvil basado en el ancho de la pantalla
+     * y actualiza el estado de colapso adecuadamente
+     */
     const checkScreenSize = () => {
       const wasMobile = isMobile.value
       isMobile.value = window.innerWidth < 768 // md breakpoint en Tailwind
@@ -79,8 +84,6 @@ export default defineComponent({
       }
     }
 
-    let initialCheck = true
-
     // Configurar detección de tamaño al montar y desmontar
     onMounted(() => {
       checkScreenSize()
@@ -91,12 +94,16 @@ export default defineComponent({
       window.removeEventListener('resize', checkScreenSize)
     })
 
-    // Toggle para colapsar/expandir el formulario
+    /**
+     * Alterna el estado de colapso del filtro
+     */
     const toggleCollapse = () => {
       isCollapsed.value = !isCollapsed.value
     }
 
-    // Cuando se aplican filtros en móvil, colapsamos automáticamente
+    /**
+     * Maneja la aplicación de filtros y colapsa automáticamente en móvil
+     */
     const onFormSubmit = (formData: FormData) => {
       emit('filter-applied', formData)
 
@@ -105,7 +112,9 @@ export default defineComponent({
       }
     }
 
-    // Cuando se resetea el formulario
+    /**
+     * Maneja el reseteo de filtros
+     */
     const onFormReset = (defaultData: FormData) => {
       emit('filter-reset', defaultData)
     }

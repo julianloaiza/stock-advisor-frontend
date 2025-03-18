@@ -74,6 +74,10 @@ import { useNotificationStore } from '@/stores/notificationStore'
 import BaseButton from '@/components/atoms/BaseButton.vue'
 import NotificationItem from '@/components/atoms/NotificationItem.vue'
 
+/**
+ * Menú desplegable para mostrar y gestionar notificaciones del sistema
+ * Incluye indicador de notificaciones no leídas y opciones para eliminarlas
+ */
 export default defineComponent({
   name: 'NotificationDropdown',
   components: {
@@ -85,6 +89,9 @@ export default defineComponent({
     const isOpen = ref(false)
     const componentId = `notification-dropdown-${Date.now()}`
 
+    /**
+     * Cierra el menú desplegable cuando se hace clic fuera de él
+     */
     const handleClickOutside = (event: MouseEvent) => {
       if (!isOpen.value) return
 
@@ -101,6 +108,10 @@ export default defineComponent({
       }
     }
 
+    /**
+     * Alterna la visibilidad del menú y marca las notificaciones como leídas
+     * cuando se abre
+     */
     const toggleDropdown = () => {
       isOpen.value = !isOpen.value
       if (isOpen.value) {
