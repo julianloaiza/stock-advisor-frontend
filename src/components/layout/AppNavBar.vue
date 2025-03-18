@@ -79,7 +79,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import LanguageSwitcher from '../molecules/LenguageSwitcher.vue'
+import LanguageSwitcher from '../molecules/LanguageSwitcher.vue'
 import NotificationDropdown from '../molecules/NotificationDropdown.vue'
 
 /**

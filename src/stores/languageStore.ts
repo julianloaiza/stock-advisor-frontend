@@ -1,39 +1,33 @@
+/**
+ * Store para gestionar el idioma de la aplicación
+ */
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-/**
- * Clave de almacenamiento local para persistir el idioma del usuario
- */
+// Clave para localStorage
 const STORAGE_KEY = 'user-locale'
 
-/**
- * Store de gestión de idioma para la aplicación Stock Advisor
- *
- * Permite mantener y cambiar el idioma de la interfaz,
- * con persistencia en el almacenamiento local
- */
+// Idioma predeterminado de las variables de entorno o 'EN'
+const defaultLanguage = import.meta.env.VITE_DEFAULT_LANGUAGE?.toUpperCase() || 'EN'
+
 export const useLanguageStore = defineStore('language', () => {
-  /**
-   * Estado reactivo del idioma actual,
-   * inicializado con el valor guardado en localStorage o inglés por defecto
-   */
-  const currentLanguage = ref(localStorage.getItem(STORAGE_KEY) || 'EN')
+  // Estado del idioma actual
+  const currentLanguage = ref(localStorage.getItem(STORAGE_KEY) || defaultLanguage)
 
   /**
-   * Establece el nuevo idioma y lo guarda en localStorage
-   *
-   * @param lang - Código de idioma a establecer (ej. 'EN', 'ES')
+   * Cambia el idioma de la aplicación
    */
   function setLanguage(lang: string) {
-    currentLanguage.value = lang
-    localStorage.setItem(STORAGE_KEY, lang)
+    // Normalizar a mayúsculas
+    const normalizedLang = lang.toUpperCase()
+
+    // Actualizar estado y localStorage
+    currentLanguage.value = normalizedLang
+    localStorage.setItem(STORAGE_KEY, normalizedLang)
   }
 
   return {
-    // Estado
     currentLanguage,
-
-    // Acciones
     setLanguage,
   }
 })

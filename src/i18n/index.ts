@@ -1,28 +1,24 @@
+/**
+ * Configuración de internacionalización para la aplicación
+ */
 import { createI18n } from 'vue-i18n'
 import EN from './locales/en.json'
 import ES from './locales/es.json'
 
-/**
- * Recuperar el idioma guardado previamente del almacenamiento local
- * Usa inglés como idioma predeterminado si no hay preferencia guardada
- */
-const savedLanguage = localStorage.getItem('user-locale') || 'EN'
+// Clave para localStorage
+export const STORAGE_KEY = 'user-locale'
 
-/**
- * Mapeo de mensajes de internacionalización para los idiomas soportados
- */
-const messages = {
-  EN,
-  ES,
-}
+// Idioma predeterminado de las variables de entorno o 'EN'
+export const DEFAULT_LANGUAGE = import.meta.env.VITE_DEFAULT_LANGUAGE?.toUpperCase() || 'EN'
 
-/**
- * Configuración de i18n para soporte multilenguaje en la aplicación
- *
- * @description Inicializa Vue I18n con el idioma guardado previamente
- * y los mensajes de traducción importados
- */
+// Obtener idioma guardado o usar el predeterminado
+export const INITIAL_LANGUAGE = localStorage.getItem(STORAGE_KEY) || DEFAULT_LANGUAGE
+
+// Mensajes de traducción
+const messages = { EN, ES }
+
+// Crear instancia i18n
 export const i18n = createI18n({
-  locale: savedLanguage,
+  locale: INITIAL_LANGUAGE,
   messages,
 })
