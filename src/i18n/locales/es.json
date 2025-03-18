@@ -45,10 +45,6 @@
   "t_stocks_table_columns_target_from": "Precio Objetivo Mínimo",
   "t_stocks_table_columns_target_to": "Precio Objetivo Máximo",
   "t_stocks_table_columns_currency": "Tipo de Moneda",
-  "t_stocks_filters_recommends": "Inversiones Recomendadas",
-  "t_stocks_filters_query": "Buscar",
-  "t_stocks_filters_min_target_to": "Precio objetivo mínimo",
-  "t_stocks_filters_max_target_to": "Precio objetivo máximo",
 
   "t_notFound_title": "Página no encontrada",
   "t_notFound_description": "Lo sentimos, no pudimos encontrar esta página. Puedes explorar más en la página de inicio.",
@@ -80,20 +76,7 @@
   "t_time_less_than_month_ago": "Hace menos de un mes",
   "t_time_unknown_date": "Fecha desconocida",
 
-  "t_errors_syncStore_load_state_error": "Error al cargar el estado de sincronización",
-  "t_errors_syncStore_save_state_error": "Error al guardar el estado de sincronización",
-  "t_errors_stockStore_fetch_error": "Error al cargar las inversiones",
-  "t_errors_stockStore_unknown_error": "Ocurrió un error desconocido",
-  "t_errors_notificationStore_load_error": "Error al cargar las notificaciones",
-  "t_errors_notificationStore_save_error": "Error al guardar las notificaciones",
-
-  "t_customTable_empty_state": "No hay datos disponibles",
-  "t_customTable_error_state": "Ocurrió un error al cargar los datos",
-  "t_customTable_loading_state": "Cargando...",
   "t_customTable_placeholder_value": "-",
-  "t_customTable_pagination_entries_per_page": "entradas por página",
-  "t_customTable_form_errors_required": "Este campo es obligatorio",
-  "t_customTable_form_errors_disabled": "El envío del formulario está actualmente deshabilitado",
 
   "t_customFilter_default_title": "Filtros",
   "t_customFilter_toggle_button_show": "Mostrar",
@@ -110,14 +93,8 @@
   "t_components_baseInput_placeholders_input_currency": "Ingresa la cantidad",
   "t_components_baseInput_default_error": "Este campo es obligatorio",
 
-  "t_components_baseButton_submit": "Enviar",
-  "t_components_baseButton_reset": "Reiniciar",
   "t_components_baseButton_recommended": "Recomendado",
   "t_components_baseButton_default_label_primary": "Enviar",
-  "t_components_baseButton_default_label_secondary": "Cancelar",
-  "t_components_baseButton_default_label_outline": "Acción",
-  "t_components_baseButton_default_label_icon": "Botón",
-  "t_components_baseButton_default_label_link": "Enlace",
 
   "t_language_english": "Inglés (EE.UU.)",
   "t_language_spanish": "Español (ES)",
@@ -154,17 +131,12 @@
   "t_components_loadingIndicator_default_label": "Cargando...",
 
   "t_components_errorMessage_required": "Este campo es obligatorio",
-  "t_components_errorMessage_invalid": "Entrada no válida",
-  "t_components_errorMessage_min": "El valor es demasiado bajo",
-  "t_components_errorMessage_max": "El valor es demasiado alto",
 
   "t_components_baseSwitch_default_label": "Alternar",
   "t_components_baseSwitch_default_error": "Este campo es obligatorio",
 
   "t_components_baseDropdown_default_placeholder": "Selecciona una opción",
   "t_components_baseDropdown_default_error": "Este campo es obligatorio",
-
-  "t_form_default_error_message": "Por favor, revisa los campos del formulario",
 
   "t_alertBanner_messages_info": "Este es un mensaje informativo",
   "t_alertBanner_messages_success": "Operación completada exitosamente",

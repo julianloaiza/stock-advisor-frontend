@@ -54,10 +54,10 @@ export function useSync() {
 
       return response
     } catch (error) {
-      const errorMessage = 't_errors_stockStore_unknown_error'
+      const errorMessage = 't_sync_notifications_error'
       syncStore.completeSync(false)
       notificationStore.addNotification(errorMessage, 'error')
-      console.error('Error en sincronización:', error)
+      console.error('Synchronization error:', error)
     } finally {
       loading.value = false
     }
