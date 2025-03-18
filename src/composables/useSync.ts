@@ -2,10 +2,8 @@ import { ref, reactive } from 'vue'
 import { syncStocks } from '@/api/services/stockService'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { useSyncStore } from '@/stores/syncStore'
-import { useI18n } from 'vue-i18n'
 
 export function useSync() {
-  const { t } = useI18n()
   const notificationStore = useNotificationStore()
   const syncStore = useSyncStore()
 
@@ -52,17 +50,13 @@ export function useSync() {
 
       // Marcar como exitoso y agregar notificación
       syncStore.completeSync(true)
-      notificationStore.addNotification(t('t_sync_notifications_success'), 'success')
+      notificationStore.addNotification('t_sync_notifications_success', 'success')
 
       return response
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : t('t_errors_stockStore_unknown_error')
+      const errorMessage = 't_errors_stockStore_unknown_error'
       syncStore.completeSync(false)
-      notificationStore.addNotification(
-        t('t_sync_notifications_error', { error: errorMessage }),
-        'error',
-      )
+      notificationStore.addNotification(errorMessage, 'error')
       console.error('Error en sincronización:', error)
     } finally {
       loading.value = false
@@ -78,7 +72,7 @@ export function useSync() {
   const checkIncompleteSync = () => {
     if (syncStore.syncInProgress) {
       syncStore.recoverFromIncompleteSync()
-      notificationStore.addNotification(t('t_sync_notifications_incomplete_sync'), 'warning')
+      notificationStore.addNotification('t_sync_notifications_incomplete_sync', 'warning')
     }
   }
 

@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="validateAndSubmit" class="w-full flex justify-center">
+  <form @submit.prevent="validateAndSubmit" class="w-full flex justify-center" novalidate>
     <div class="form-container flex flex-wrap items-center gap-2 md:gap-4">
       <div
         v-for="field in config.fields"

@@ -73,7 +73,7 @@
         </div>
 
         <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">{{ $t(title) }}</h3>
-        <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">{{ $t(message) }}</p>
+        <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">{{ message }}</p>
 
         <div class="flex justify-center space-x-4">
           <BaseButton :label="confirmLabel" :variant="confirmVariant" @click="$emit('confirm')" />

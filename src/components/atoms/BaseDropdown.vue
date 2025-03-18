@@ -6,7 +6,6 @@
       @click="!disabled && (isOpen = !isOpen)"
       class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 flex justify-between items-center"
       :class="{
-        'border-red-500 focus:ring-red-500 focus:border-red-500': showError,
         'opacity-50 cursor-not-allowed': disabled,
         'cursor-pointer': !disabled,
       }"

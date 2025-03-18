@@ -1,7 +1,5 @@
 <template>
   <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4 dark:text-white">{{ $t('t_stocks_title') }}</h1>
-
     <!-- Panel de filtros -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
       <CustomFilter

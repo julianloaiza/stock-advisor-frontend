@@ -43,7 +43,7 @@
     <div class="w-full ps-3 text-sm text-gray-700 dark:text-gray-300">
       {{ $t(notification.message) }}
       <time class="block text-xs text-blue-600 dark:text-blue-500">
-        {{ formatRelativeTime(notification.timestamp) }}
+        {{ $t(formatRelativeTime(notification.timestamp)) }}
       </time>
     </div>
 

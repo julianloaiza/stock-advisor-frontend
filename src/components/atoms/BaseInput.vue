@@ -63,18 +63,15 @@
       :id="id"
       :type="inputType"
       :value="modelValue"
-      :placeholder="$t(`t_components_baseInput_placeholders_${type}`)"
+      :placeholder="$t(placeholder) || $t(`t_components_baseInput_placeholders_${type}`)"
       :required="required"
       :disabled="disabled"
       @input="updateValue($event)"
       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="[
-        { 'ps-10': showIcon },
-        { 'border-red-500 focus:ring-red-500 focus:border-red-500': showError },
-      ]"
+      :class="[{ 'ps-10': showIcon }]"
     />
 
-    <ErrorMessage :show="showError" :message="$t(errorMessage)" />
+    <ErrorMessage :show="showError" :message="errorMessage" />
   </div>
 </template>
 

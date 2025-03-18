@@ -1,5 +1,9 @@
 <template>
-  <p v-if="show" class="mt-1 text-sm text-red-600 dark:text-red-500">
+  <p
+    v-if="show"
+    class="absolute text-xs text-red-600 dark:text-red-500 mt-1 left-0 pl-3"
+    style="top: 100%; z-index: 5"
+  >
     {{ $t(message) }}
   </p>
 </template>
