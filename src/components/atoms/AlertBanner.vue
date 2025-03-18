@@ -6,7 +6,7 @@
   >
     <p class="text-blue-800 dark:text-blue-200 font-medium text-sm" :class="textClass">
       <span class="mr-2">{{ icon }}</span>
-      {{ $t(message) + type }}
+      {{ message ? $t(message) : $t(`t_alertBanner_messages_${type}`) }}
     </p>
   </div>
 </template>
@@ -26,7 +26,7 @@ export default defineComponent({
     },
     message: {
       type: String,
-      default: 't_alertBanner_messages_',
+      default: '',
     },
     icon: {
       type: String,
