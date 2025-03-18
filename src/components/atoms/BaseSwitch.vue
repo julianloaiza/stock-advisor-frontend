@@ -18,11 +18,11 @@
         :class="{ 'ring-2 ring-red-500': showError }"
       ></div>
       <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-        {{ label }}
+        {{ $t(label) }}
       </span>
     </label>
 
-    <ErrorMessage :show="showError" :message="errorMessage" />
+    <ErrorMessage :show="showError" :message="$t(errorMessage)" />
   </div>
 </template>
 
@@ -42,7 +42,7 @@ export default defineComponent({
     },
     label: {
       type: String,
-      default: 'Toggle',
+      default: 't_components_baseSwitch_default_label',
     },
     modelValue: {
       type: Boolean,
@@ -62,7 +62,7 @@ export default defineComponent({
     },
     errorMessage: {
       type: String,
-      default: 'This field is required',
+      default: 't_components_baseSwitch_default_error',
     },
   },
   emits: ['update:modelValue'],

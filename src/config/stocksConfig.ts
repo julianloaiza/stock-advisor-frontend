@@ -6,26 +6,26 @@ export const stocksFormConfig: FormConfig = {
   fields: [
     {
       name: 'query',
-      type: 'input-search',
-      placeholder: 'Enter search text',
+      type: 'input_search',
+      placeholder: 't_stocks_form_query_placeholder',
       defaultValue: '',
     },
     {
       name: 'minTargetTo',
-      type: 'input-currency',
-      placeholder: 'Min price',
+      type: 'input_currency',
+      placeholder: 't_stocks_form_min_price_placeholder',
       defaultValue: '',
     },
     {
       name: 'maxTargetTo',
-      type: 'input-currency',
-      placeholder: 'Max price',
+      type: 'input_currency',
+      placeholder: 't_stocks_form_max_price_placeholder',
       defaultValue: '',
     },
     {
       name: 'currency',
       type: 'dropdown',
-      placeholder: 'Currency',
+      placeholder: 't_stocks_form_currency_placeholder',
       defaultValue: 'USD',
       options: [
         { value: 'USD', label: 'USD' },
@@ -35,64 +35,64 @@ export const stocksFormConfig: FormConfig = {
     {
       name: 'recommends',
       type: 'switch',
-      placeholder: 'Recommended',
+      placeholder: 't_stocks_form_recommended_placeholder',
       defaultValue: false,
     },
   ],
-  actionLabel: 'Search',
-  clearLabel: 'Clear',
+  actionLabel: 't_stocks_form_search_label',
+  clearLabel: 't_stocks_form_clear_label',
 }
 
 // Configuración de la tabla de stocks
 export const stocksTableConfig: TableConfig = {
-  title: 'Stocks',
+  title: 't_stocks_table_title',
   columns: [
     {
       key: 'ticker',
-      header: 'Ticker',
+      header: 't_stocks_table_columns_ticker',
       type: 'text',
       highlight: true,
     },
     {
       key: 'company',
-      header: 'Company',
+      header: 't_stocks_table_columns_company',
       type: 'text',
       highlight: true,
     },
     {
       key: 'brokerage',
-      header: 'Brokerage',
+      header: 't_stocks_table_columns_brokerage',
       type: 'text',
     },
     {
       key: 'action',
-      header: 'Action',
+      header: 't_stocks_table_columns_action',
       type: 'text',
     },
     {
       key: 'rating_from',
-      header: 'Rating From',
+      header: 't_stocks_table_columns_rating_from',
       type: 'text',
     },
     {
       key: 'rating_to',
-      header: 'Rating To',
+      header: 't_stocks_table_columns_rating_to',
       type: 'text',
     },
     {
       key: 'target_from',
-      header: 'Target From',
+      header: 't_stocks_table_columns_target_from',
       type: 'currency',
     },
     {
       key: 'target_to',
-      header: 'Target To',
+      header: 't_stocks_table_columns_target_to',
       type: 'currency',
       highlight: true,
     },
     {
       key: 'currency',
-      header: 'Currency',
+      header: 't_stocks_table_columns_currency',
       type: 'text',
     },
   ],

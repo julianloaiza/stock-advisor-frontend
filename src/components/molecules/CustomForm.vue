@@ -8,7 +8,7 @@
       >
         <!-- Input field -->
         <BaseInput
-          v-if="['input-search', 'input-number', 'input-currency'].includes(field.type)"
+          v-if="['input_search', 'input_number', 'input_currency'].includes(field.type)"
           :id="field.name"
           :type="field.type as any"
           :placeholder="field.placeholder || ''"
@@ -23,7 +23,7 @@
         <BaseSwitch
           v-else-if="field.type === 'switch'"
           :id="field.name"
-          :label="field.placeholder || 'Recommended'"
+          :label="field.placeholder || 't_components_baseButton_recommended'"
           v-model="formData[field.name] as boolean | undefined"
           :disabled="disabled"
           :required="field.required || false"

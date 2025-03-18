@@ -1,7 +1,7 @@
 export type FieldInputType =
-  | 'input-search'
-  | 'input-number'
-  | 'input-currency'
+  | 'input_search'
+  | 'input_number'
+  | 'input_currency'
   | 'switch'
   | 'dropdown'
 

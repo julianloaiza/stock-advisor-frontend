@@ -17,38 +17,59 @@ export const formatCurrency = (value: string | number, currency: string = 'USD')
     minimumFractionDigits: 2,
   }).format(numValue)
 }
-
 /**
  * Formatea un timestamp a un formato relativo para mostrar en la UI
  * @param timestamp - El timestamp en milisegundos
- * @returns Texto formateado para mostrar en la UI
+ * @returns Clave de traducción para el texto formateado
  */
 export function formatRelativeTime(timestamp: number): string {
   try {
     const now = Date.now()
     const diffSeconds = Math.floor((now - timestamp) / 1000)
 
-    if (diffSeconds < 5) return 'Ahora mismo'
-    if (diffSeconds < 60) return 'Hace unos segundos'
+    if (diffSeconds < 5) return 't_time_just_now'
+    if (diffSeconds < 60) return 't_time_seconds_ago'
+
     if (diffSeconds < 3600) {
       const minutes = Math.floor(diffSeconds / 60)
-      return `Hace ${minutes} ${minutes === 1 ? 'minuto' : 'minutos'}`
-    }
-    if (diffSeconds < 86400) {
-      const hours = Math.floor(diffSeconds / 3600)
-      return `Hace ${hours} ${hours === 1 ? 'hora' : 'horas'}`
+      // Usar claves específicas para cada cantidad de minutos
+      if (minutes === 1) return 't_time_one_minute_ago'
+      if (minutes === 2) return 't_time_two_minutes_ago'
+      if (minutes === 3) return 't_time_three_minutes_ago'
+      if (minutes === 4) return 't_time_four_minutes_ago'
+      if (minutes === 5) return 't_time_five_minutes_ago'
+      if (minutes <= 10) return 't_time_less_than_ten_minutes_ago'
+      if (minutes <= 15) return 't_time_less_than_fifteen_minutes_ago'
+      if (minutes <= 30) return 't_time_less_than_thirty_minutes_ago'
+      return 't_time_less_than_hour_ago'
     }
 
-    // Para fechas más antiguas, mostrar la fecha formateada
-    const days = Math.floor(diffSeconds / 86400)
-    if (days <= 30) {
-      return `Hace ${days} ${days === 1 ? 'día' : 'días'}`
-    } else {
-      const date = new Date(timestamp)
-      return date.toLocaleDateString()
+    if (diffSeconds < 86400) {
+      const hours = Math.floor(diffSeconds / 3600)
+      // Usar claves específicas para cada cantidad de horas
+      if (hours === 1) return 't_time_one_hour_ago'
+      if (hours === 2) return 't_time_two_hours_ago'
+      if (hours === 3) return 't_time_three_hours_ago'
+      if (hours === 4) return 't_time_four_hours_ago'
+      if (hours <= 6) return 't_time_less_than_six_hours_ago'
+      if (hours <= 12) return 't_time_less_than_twelve_hours_ago'
+      return 't_time_less_than_day_ago'
     }
+
+    // Para fechas más antiguas
+    const days = Math.floor(diffSeconds / 86400)
+    if (days === 1) return 't_time_one_day_ago'
+    if (days === 2) return 't_time_two_days_ago'
+    if (days === 3) return 't_time_three_days_ago'
+    if (days <= 7) return 't_time_less_than_week_ago'
+    if (days <= 14) return 't_time_less_than_two_weeks_ago'
+    if (days <= 30) return 't_time_less_than_month_ago'
+
+    // Para fechas muy antiguas, mantener el formato de fecha
+    const date = new Date(timestamp)
+    return date.toLocaleDateString()
   } catch (e) {
-    console.error('Error formateando tiempo:', e)
-    return 'Fecha desconocida'
+    console.error('Error formatting time:', e)
+    return 't_time_unknown_date'
   }
 }

@@ -1,11 +1,11 @@
 <template>
   <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4 dark:text-white">Stock Advisor</h1>
+    <h1 class="text-2xl font-bold mb-4 dark:text-white">{{ $t('t_stocks_title') }}</h1>
 
     <!-- Panel de filtros -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
       <CustomFilter
-        title="Filtrar Acciones"
+        :title="'t_stocks_filter_title'"
         :formConfig="stocksFormConfig"
         :initialValues="formInitialValues"
         @filter-applied="handleFilterSubmit"
@@ -18,14 +18,14 @@
       <!-- Banner de recomendaciones -->
       <AlertBanner
         :show="shouldShowRecommendations"
-        message="Las acciones destacadas representan las mejores oportunidades de inversión según nuestro algoritmo."
+        :message="'t_stocks_recommendations_banner'"
         icon="💡"
       />
 
       <!-- Banner de datos actualizados -->
       <AlertBanner
         :show="hasPendingDataUpdate"
-        message="Los datos han sido actualizados recientemente. Por favor realice una nueva búsqueda para ver la información más reciente."
+        :message="'t_stocks_data_update_banner'"
         icon="🔄"
         type="info"
       />

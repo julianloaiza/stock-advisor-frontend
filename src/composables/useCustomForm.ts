@@ -15,7 +15,7 @@ export function useCustomForm(
   emit: EmitEvent,
 ) {
   // Mensaje de error por defecto
-  const defaultErrorMessage = 'This field is required'
+  const defaultErrorMessage = 't_components_errorMessage_required'
 
   // Objeto para rastrear qué campos tienen errores
   const fieldErrors = reactive<Record<string, boolean>>({})

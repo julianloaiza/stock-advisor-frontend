@@ -1,6 +1,6 @@
 <template>
   <p v-if="show" class="mt-1 text-sm text-red-600 dark:text-red-500">
-    {{ message }}
+    {{ $t(message) }}
   </p>
 </template>
 
@@ -16,7 +16,7 @@ export default defineComponent({
     },
     message: {
       type: String,
-      default: 'This field is required',
+      default: 't_components_errorMessage_required',
     },
   },
 })

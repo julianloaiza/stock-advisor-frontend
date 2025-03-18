@@ -33,7 +33,7 @@
       class="z-20 absolute transform -translate-x-1/2 left-1/2 mt-2 w-80 max-w-sm bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-800 dark:divide-gray-700"
     >
       <div class="block px-4 py-2 font-medium text-center text-gray-700 dark:text-white">
-        Notificaciones
+        {{ $t('t_notifications_title') }}
       </div>
 
       <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-80 overflow-y-auto">
@@ -42,7 +42,7 @@
           v-if="!notificationStore.hasNotifications"
           class="py-4 px-4 text-sm text-gray-500 dark:text-gray-400 text-center"
         >
-          No tienes notificaciones
+          {{ $t('t_notifications_empty') }}
         </div>
 
         <!-- Listado de notificaciones -->
@@ -60,7 +60,7 @@
           v-if="notificationStore.hasNotifications"
           @click="notificationStore.clearAllNotifications()"
           variant="link"
-          label="Borrar todo"
+          label="t_notifications_clear_all"
           class="text-red-600 hover:underline dark:text-red-500 cursor-pointer"
         />
       </div>

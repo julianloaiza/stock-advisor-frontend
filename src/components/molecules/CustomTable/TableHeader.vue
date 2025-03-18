@@ -1,8 +1,10 @@
 <template>
   <div class="flex flex-wrap justify-between items-center mb-4">
-    <h2 class="text-lg font-semibold dark:text-white mb-2 md:mb-0">{{ title }}</h2>
+    <h2 class="text-lg font-semibold dark:text-white mb-2 md:mb-0">{{ $t(title) }}</h2>
     <div class="flex items-center space-x-2">
-      <div class="text-sm text-gray-700 dark:text-gray-400">Entradas por página</div>
+      <div class="text-sm text-gray-700 dark:text-gray-400">
+        {{ $t('t_components_tableHeader_entries_per_page') }}
+      </div>
       <select
         :value="pageSize"
         @change="handlePageSizeChange"
@@ -22,7 +24,7 @@ export default defineComponent({
   props: {
     title: {
       type: String,
-      default: 'Resultados',
+      default: 't_components_tableHeader_default_title',
     },
     pageSize: {
       type: Number,

@@ -17,7 +17,7 @@
         ></path>
       </svg>
     </div>
-    <span v-if="label" class="ml-2 text-gray-700 dark:text-gray-300">{{ label }}</span>
+    <span v-if="label" class="ml-2 text-gray-700 dark:text-gray-300">{{ $t(label) }}</span>
   </div>
 </template>
 
@@ -39,7 +39,7 @@ export default defineComponent({
     },
     label: {
       type: String,
-      default: '',
+      default: 't_components_loadingIndicator_default_label',
     },
     containerClass: {
       type: String,

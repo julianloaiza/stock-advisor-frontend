@@ -20,7 +20,7 @@ export const useSyncStore = defineStore('sync', () => {
         lastSyncTime.value = data.lastSyncTime || null
       }
     } catch (e) {
-      console.error('Error al cargar estado de sincronización:', e)
+      console.error('Error loading sync state:', e)
     }
   }
 
@@ -35,7 +35,7 @@ export const useSyncStore = defineStore('sync', () => {
         }),
       )
     } catch (e) {
-      console.error('Error al guardar estado de sincronización:', e)
+      console.error('Error saving sync state:', e)
     }
   }
 

@@ -4,13 +4,15 @@
     <!-- En desktop: título centrado, sin botón -->
     <div class="flex md:justify-center items-center mb-3 relative">
       <div class="flex justify-between items-center w-full md:w-auto">
-        <h2 class="text-lg font-semibold dark:text-white">{{ title }}</h2>
+        <h2 class="text-lg font-semibold dark:text-white">{{ $t(title) }}</h2>
 
         <!-- Botón de toggle solo visible en móvil -->
         <BaseButton
           v-if="isMobile"
           :icon="isCollapsed ? 'chevron-down' : 'chevron-up'"
-          :label="isCollapsed ? 'Mostrar' : 'Ocultar'"
+          :label="
+            isCollapsed ? 't_customFilter_toggle_button_show' : 't_customFilter_toggle_button_hide'
+          "
           variant="primary"
           @click="toggleCollapse"
           class="ml-4"
@@ -45,7 +47,7 @@ export default defineComponent({
   props: {
     title: {
       type: String,
-      default: 'Filtros',
+      default: 't_customFilter_default_title',
     },
     formConfig: {
       type: Object as PropType<FormConfig>,

@@ -41,7 +41,7 @@
     </div>
 
     <div class="w-full ps-3 text-sm text-gray-700 dark:text-gray-300">
-      {{ notification.message }}
+      {{ $t(notification.message) }}
       <time class="block text-xs text-blue-600 dark:text-blue-500">
         {{ formatRelativeTime(notification.timestamp) }}
       </time>
@@ -50,7 +50,7 @@
     <button
       @click.stop="$emit('remove', notification.id)"
       class="absolute top-2 right-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 cursor-pointer"
-      aria-label="Eliminar notificación"
+      :aria-label="$t('t_components_notificationItem_remove_label')"
     >
       <svg
         class="w-4 h-4"

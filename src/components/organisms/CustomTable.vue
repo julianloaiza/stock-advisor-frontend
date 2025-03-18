@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold dark:text-white">{{ config.title }}</h2>
+      <h2 class="text-2xl font-bold dark:text-white">{{ $t(config.title) }}</h2>
 
       <!-- Selector de elementos por página -->
       <div v-if="config.pagination && !loading" class="flex items-center space-x-2">
@@ -22,7 +22,7 @@
           </option>
         </select>
         <label for="itemsPerPage" class="text-sm font-medium text-gray-600 dark:text-gray-400">
-          entradas por página
+          {{ $t('t_components_tableHeader_entries_per_page') }}
         </label>
       </div>
     </div>
@@ -41,7 +41,7 @@
               scope="col"
               class="px-6 py-3 text-xs font-bold text-gray-500 dark:text-white uppercase tracking-wider"
             >
-              {{ column.header }}
+              {{ $t(column.header) }}
             </th>
           </tr>
         </thead>

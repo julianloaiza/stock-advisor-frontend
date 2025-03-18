@@ -4,7 +4,7 @@
       <!-- Spinner de carga -->
       <div v-if="loading" class="flex flex-col items-center justify-center">
         <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-700 mb-3"></div>
-        <p class="text-gray-500 dark:text-gray-400">{{ loadingMessage }}</p>
+        <p class="text-gray-500 dark:text-gray-400">{{ $t(loadingMessage) }}</p>
       </div>
 
       <!-- Mensaje de error -->
@@ -23,7 +23,7 @@
             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p>{{ error || errorMessage }}</p>
+        <p>{{ error || $t(errorMessage) }}</p>
       </div>
 
       <!-- Mensaje de no resultados -->
@@ -45,7 +45,7 @@
             d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p>{{ emptyMessage }}</p>
+        <p>{{ $t(emptyMessage) }}</p>
       </div>
     </td>
   </tr>
@@ -72,15 +72,15 @@ export default defineComponent({
     },
     loadingMessage: {
       type: String,
-      default: 'Cargando datos...',
+      default: 't_components_tableEmptyMessage_loading',
     },
     emptyMessage: {
       type: String,
-      default: 'No se encontraron resultados',
+      default: 't_components_tableEmptyMessage_no_results',
     },
     errorMessage: {
       type: String,
-      default: 'Se produjo un error al cargar los datos',
+      default: 't_components_tableEmptyMessage_error',
     },
   },
 })

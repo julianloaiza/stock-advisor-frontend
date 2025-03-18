@@ -88,7 +88,11 @@ export default defineComponent({
     },
     errorMessage: {
       type: String,
-      default: 'This field is required',
+      default: 't_components_baseDropdown_default_error',
+    },
+    placeholder: {
+      type: String,
+      default: 't_components_baseDropdown_default_placeholder',
     },
   },
   emits: ['update:modelValue'],
@@ -97,7 +101,7 @@ export default defineComponent({
 
     const selectedLabel = computed(() => {
       const selected = props.options.find((opt) => opt.value === props.modelValue)
-      return selected ? selected.label : 'Select option'
+      return selected ? selected.label : props.placeholder
     })
 
     const selectOption = (value: string) => {

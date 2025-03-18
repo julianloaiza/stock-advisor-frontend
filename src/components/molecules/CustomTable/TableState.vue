@@ -6,9 +6,9 @@
         <div
           class="w-7 h-7 border-3 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-2"
         ></div>
-        <span class="text-gray-600 dark:text-gray-300 font-medium text-sm"
-          >Cargando información</span
-        >
+        <span class="text-gray-600 dark:text-gray-300 font-medium text-sm">
+          {{ $t('t_components_tableState_loading') }}
+        </span>
       </div>
 
       <!-- Estado de error -->
@@ -28,7 +28,7 @@
           />
         </svg>
         <p class="text-gray-600 dark:text-gray-300 font-medium text-sm">
-          {{ message || 'No se pudieron cargar los datos' }}
+          {{ message || $t('t_components_tableState_error_message') }}
         </p>
       </div>
 
@@ -49,7 +49,7 @@
           />
         </svg>
         <p class="text-gray-600 dark:text-gray-300 font-medium text-sm">
-          {{ message || 'No hay datos disponibles' }}
+          {{ message || $t('t_components_tableState_empty_message') }}
         </p>
       </div>
     </td>

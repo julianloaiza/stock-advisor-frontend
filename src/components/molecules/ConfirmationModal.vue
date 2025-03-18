@@ -27,7 +27,7 @@
             d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
           />
         </svg>
-        <span class="sr-only">Cerrar modal</span>
+        <span class="sr-only">{{ $t('t_components_confirmationModal_close_modal') }}</span>
       </button>
 
       <!-- Contenido del modal -->
@@ -72,8 +72,8 @@
           </svg>
         </div>
 
-        <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">{{ title }}</h3>
-        <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">{{ message }}</p>
+        <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">{{ $t(title) }}</h3>
+        <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">{{ $t(message) }}</p>
 
         <div class="flex justify-center space-x-4">
           <BaseButton :label="confirmLabel" :variant="confirmVariant" @click="$emit('confirm')" />
@@ -100,19 +100,19 @@ export default defineComponent({
     },
     title: {
       type: String,
-      default: '¿Está seguro?',
+      default: 't_components_confirmationModal_default_title',
     },
     message: {
       type: String,
-      default: 'Esta acción no se puede deshacer.',
+      default: 't_components_confirmationModal_default_message',
     },
     confirmLabel: {
       type: String,
-      default: 'Confirmar',
+      default: 't_components_confirmationModal_confirm',
     },
     cancelLabel: {
       type: String,
-      default: 'Cancelar',
+      default: 't_components_confirmationModal_cancel',
     },
     confirmVariant: {
       type: String as () => 'primary' | 'secondary',

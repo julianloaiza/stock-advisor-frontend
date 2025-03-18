@@ -6,7 +6,7 @@
     >
       <!-- Search icon -->
       <svg
-        v-if="type === 'input-search'"
+        v-if="type === 'input_search'"
         class="w-4 h-4 text-gray-500 dark:text-gray-400"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,7 @@
 
       <!-- Number icon -->
       <svg
-        v-if="type === 'input-number'"
+        v-if="type === 'input_number'"
         class="w-4 h-4 text-gray-500 dark:text-gray-400"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +42,7 @@
 
       <!-- Currency icon -->
       <svg
-        v-if="type === 'input-currency'"
+        v-if="type === 'input_currency'"
         class="w-4 h-4 text-gray-500 dark:text-gray-400"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@
       :id="id"
       :type="inputType"
       :value="modelValue"
-      :placeholder="placeholder"
+      :placeholder="$t(`t_components_baseInput_placeholders_${type}`)"
       :required="required"
       :disabled="disabled"
       @input="updateValue($event)"
@@ -74,7 +74,7 @@
       ]"
     />
 
-    <ErrorMessage :show="showError" :message="errorMessage" />
+    <ErrorMessage :show="showError" :message="$t(errorMessage)" />
   </div>
 </template>
 
@@ -96,9 +96,9 @@ export default defineComponent({
     },
     type: {
       type: String as PropType<
-        Extract<FieldInputType, 'input-search' | 'input-number' | 'input-currency'>
+        Extract<FieldInputType, 'input_search' | 'input_number' | 'input_currency'>
       >,
-      default: 'input-search',
+      default: 'input_search',
     },
     placeholder: {
       type: String,
@@ -122,7 +122,7 @@ export default defineComponent({
     },
     errorMessage: {
       type: String,
-      default: 'This field is required',
+      default: 't_components_baseInput_default_error',
     },
   },
   emits: ['update:modelValue'],
@@ -131,10 +131,10 @@ export default defineComponent({
 
     const inputType = computed(() => {
       switch (props.type) {
-        case 'input-search':
+        case 'input_search':
           return 'search'
-        case 'input-number':
-        case 'input-currency':
+        case 'input_number':
+        case 'input_currency':
           return 'number'
         default:
           return 'text'

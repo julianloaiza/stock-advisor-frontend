@@ -24,7 +24,7 @@ export const useNotificationStore = defineStore('notification', () => {
       const stored = localStorage.getItem(STORAGE_KEY)
       return stored ? JSON.parse(stored) : []
     } catch (e) {
-      console.error('Error al cargar notificaciones:', e)
+      console.error('An error occurred while loading notifications.', e)
       return []
     }
   }
@@ -48,7 +48,7 @@ export const useNotificationStore = defineStore('notification', () => {
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications.value))
     } catch (e) {
-      console.error('Error al guardar notificaciones:', e)
+      console.error('An error occurred while saving notifications.', e)
     }
   }
 

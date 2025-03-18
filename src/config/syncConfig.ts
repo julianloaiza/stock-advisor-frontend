@@ -5,10 +5,10 @@ export const syncFormConfig: FormConfig = {
   fields: [
     {
       name: 'limit',
-      type: 'input-number',
-      placeholder: 'Número de consultas',
+      type: 'input_number',
+      placeholder: 't_sync_input_placeholder',
       required: true,
     },
   ],
-  actionLabel: 'Sincronizar',
+  actionLabel: 't_sync_synchron',
 }

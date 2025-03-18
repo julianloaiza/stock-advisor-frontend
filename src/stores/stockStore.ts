@@ -94,8 +94,8 @@ export const useStockStore = defineStore('stock', {
 
         return response
       } catch (err) {
-        this.error = err instanceof Error ? err.message : 'Error desconocido'
-        console.error('Error al cargar stocks:', this.error)
+        this.error = err instanceof Error ? err.message : 't_errors_stockStore_unknown_error'
+        console.error('Error loading stocks:', this.error)
         return null
       } finally {
         this.loading = false

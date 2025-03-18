@@ -6,7 +6,7 @@
     @click="$emit('click')"
     :disabled="disabled"
   >
-    <slot>{{ label }}</slot>
+    <slot>{{ $t(label) }}</slot>
   </button>
 </template>
 
@@ -22,7 +22,7 @@ export default defineComponent({
     },
     label: {
       type: String,
-      default: 'Button',
+      default: 't_components_baseButton_default_label_primary',
     },
     type: {
       type: String as () => 'button' | 'submit' | 'reset',

@@ -8,16 +8,16 @@
           404
         </h1>
         <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">
-          Página no encontrada
+          {{ $t('t_notFound_title') }}
         </p>
         <p class="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
-          Lo sentimos, no pudimos encontrar esta página. Puedes explorar más en la página principal.
+          {{ $t('t_notFound_description') }}
         </p>
         <router-link
           to="/"
           class="inline-flex text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-blue-900 my-4"
         >
-          Volver al inicio
+          {{ $t('t_notFound_back_to_home') }}
         </router-link>
       </div>
     </div>

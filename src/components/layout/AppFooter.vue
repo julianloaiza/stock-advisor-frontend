@@ -1,8 +1,8 @@
 <template>
   <footer class="bg-white rounded-lg shadow-sm m-4 dark:bg-gray-800">
     <div class="w-full mx-auto max-w-screen-xl p-4 flex items-center justify-between">
-      <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400"
-        >© 2023 Stock Advisor™
+      <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+        {{ $t('t_components_footer_copyright', { year: new Date().getFullYear() }) }}
       </span>
       <a
         href="https://www.linkedin.com/in/julian-andres-loaiza/"
@@ -10,7 +10,7 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        Hecho por Julián Loaiza
+        {{ $t('t_components_footer_made_by') }}
       </a>
       <a
         href="https://github.com/julianloaiza/stock-advisor-frontend"

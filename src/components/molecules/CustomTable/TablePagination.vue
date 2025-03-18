@@ -5,16 +5,20 @@
       class="text-sm text-gray-700 dark:text-gray-400 mb-4 md:mb-0 text-center md:text-left w-full md:w-auto"
     >
       <template v-if="hasResults">
-        Mostrando
-        <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
-        a
-        <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, totalItems) }}</span>
-        de
-        <span class="font-medium">{{ totalItems }}</span>
-        resultados
+        {{
+          $t('t_components_tablePagination_showing', {
+            start: (currentPage - 1) * itemsPerPage + 1,
+            end: Math.min(currentPage * itemsPerPage, totalItems),
+            total: totalItems,
+          })
+        }}
       </template>
       <template v-else>
-        {{ loading ? 'Cargando...' : 'No hay resultados' }}
+        {{
+          loading
+            ? $t('t_components_tablePagination_loading')
+            : $t('t_components_tablePagination_no_results')
+        }}
       </template>
     </div>
 
@@ -29,7 +33,7 @@
           'opacity-50 cursor-not-allowed': isDisabled || currentPage === 1,
           'cursor-pointer': !(isDisabled || currentPage === 1),
         }"
-        aria-label="Página anterior"
+        :aria-label="$t('t_components_tablePagination_previous_page')"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +70,12 @@
       <div
         class="sm:hidden px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
       >
-        {{ currentPage }} / {{ totalPages }}
+        {{
+          $t('t_components_tablePagination_mobile_page_indicator', {
+            current: currentPage,
+            total: totalPages,
+          })
+        }}
       </div>
 
       <!-- Botón siguiente con icono -->
@@ -78,7 +87,7 @@
           'opacity-50 cursor-not-allowed': isDisabled || currentPage === totalPages,
           'cursor-pointer': !(isDisabled || currentPage === totalPages),
         }"
-        aria-label="Página siguiente"
+        :aria-label="$t('t_components_tablePagination_next_page')"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -45,7 +45,7 @@ export function useCustomTable(props: CustomTableProps, emit: CustomTableEmit) {
   // Formatear valores de las celdas según el tipo
   const formatCellValue = (value: unknown, type?: string): string => {
     if (value === null || value === undefined) {
-      return '-'
+      return 't_customTable_placeholder_value'
     }
     if (type === 'currency' && typeof value === 'number') {
       return new Intl.NumberFormat('en-US', {
