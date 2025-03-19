@@ -18,7 +18,7 @@ Stock Advisor es una aplicación web moderna diseñada para visualizar, filtrar 
 
 - Node.js 22.0+ (recomendado)
 - Navegador web moderno (Chrome, Firefox, Edge, Safari)
-- Backend API (ver repositorio correspondiente del backend)
+- Backend API [julianloaiza/stock-advisor](https://github.com/julianloaiza/stock-advisor)
 
 ## Instalación
 
