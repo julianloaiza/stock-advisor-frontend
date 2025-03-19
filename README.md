@@ -2,7 +2,7 @@
 
 Stock Advisor is a modern web application designed to visualize, filter, and analyze stock market data. The application provides an intuitive interface for users to search, filter, and get recommendations for potential investment opportunities.
 
-![Desktop/Mobile Dark/Light Mode](src/assets/captures/capture.png)
+![Desktop/Mobile Dark/Light Mode](src/assets/captures/capture_en.png)
 
 ## Features
 
