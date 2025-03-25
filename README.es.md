@@ -45,6 +45,25 @@ VITE_DEFAULT_LANGUAGE=ES
 
 > Nota: VITE_DEFAULT_LANGUAGE puede configurarse como 'EN' o 'ES' para definir el idioma predeterminado de la aplicación cuando no existe una preferencia de usuario.
 
+## Ejecución con Docker
+
+Puedes ejecutar la aplicación utilizando Docker:
+
+```bash
+# Construir la imagen
+docker build -t stock-advisor-frontend .
+
+# Ejecutar el contenedor
+docker run -p 5173:5173 \
+  -e VITE_API_BASE_URL=http://localhost:8080 \
+  stock-advisor-frontend
+```
+
+### Despliegue Completo
+
+Para un despliegue completo de toda la aplicación, visita:
+[julianloaiza/stock-advisor-deployment](https://github.com/julianloaiza/stock-advisor-deployment)
+
 ## Desarrollo
 
 Inicia el servidor de desarrollo:
